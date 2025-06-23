@@ -1,0 +1,140 @@
+'use client';
+
+import React, { useRef, useEffect } from 'react';
+import Header from './Header';
+
+const NUM_PARTICLES = 80;
+const COLORS = ['#fffbe6', '#ffe7a3', '#ffd700', '#fff', '#ffecb3'];
+
+function randomBetween(a: number, b: number) {
+  return a + Math.random() * (b - a);
+}
+
+const Landing: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    function handleResize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      if (!canvas) return;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', handleResize);
+
+    // Particelle
+    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
+      x: randomBetween(0, width),
+      y: randomBetween(-height, 0),
+      r: randomBetween(1, 3),
+      speed: randomBetween(0.5, 2.5),
+      alpha: randomBetween(0.5, 1),
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    }));
+
+    function draw() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function update() {
+      for (const p of particles) {
+        p.y += p.speed;
+        p.x += Math.sin(p.y / 40) * 0.5; // leggero movimento orizzontale
+        p.alpha -= 0.001 * p.speed;
+        if (p.y - p.r > height || p.alpha <= 0.1) {
+          // resetta la particella in alto
+          p.x = randomBetween(0, width);
+          p.y = randomBetween(-20, 0);
+          p.r = randomBetween(1, 3);
+          p.speed = randomBetween(0.5, 2.5);
+          p.alpha = randomBetween(0.5, 1);
+          p.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        }
+      }
+    }
+
+    let running = true;
+    function animate() {
+      if (!running) return;
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    return () => {
+      running = false;
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
+      <video
+        className="absolute inset-0 w-full h-full object-contain"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          opacity: '0.8',
+          pointerEvents: 'none',
+        }}
+      >
+        <source src="/video/ipb-background.mp4" type="video/mp4" />
+        Il tuo browser non supporta il tag video.
+      </video>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 2 }}
+      />
+      <div
+        className="absolute z-10"
+        style={{
+          left: '4vw',
+          bottom: '20vh',
+          maxWidth: '90vw',
+        }}
+      >
+        <h1
+          className="text-white text-left font-semibold drop-shadow-lg"
+          style={{
+            fontSize: 'clamp(2.4rem,7vw,7rem)',
+            lineHeight: 0.9,
+            letterSpacing: '-0.04em',
+            textShadow: '0 4px 32px rgba(0,0,0,0.7)',
+          }}
+        >
+          Qualcosa di nuovo<br />sta per succedere
+        </h1>
+      </div>
+      <Header />
+    </div>
+  );
+};
+
+export default Landing; 

@@ -1,0 +1,76 @@
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  overflow: hidden;
+}
+
+.diagonalLeft, .diagonalRight {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60vw;
+  background: #000;
+  z-index: 2;
+  will-change: transform, clip-path;
+  box-shadow: 0 0 32px 0 #000, 0 0 0 2px #fff2;
+}
+
+.diagonalLeft {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+  animation: diagonalLeftAnim 1.7s cubic-bezier(.7,0,.3,1) forwards;
+}
+
+.diagonalRight {
+  right: 0;
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  animation: diagonalRightAnim 1.7s cubic-bezier(.7,0,.3,1) forwards;
+}
+
+@keyframes diagonalLeftAnim {
+  0% {
+    transform: translateX(0);
+  }
+  80% {
+    transform: translateX(-90vw);
+  }
+  100% {
+    transform: translateX(-100vw);
+  }
+}
+
+@keyframes diagonalRightAnim {
+  0% {
+    transform: translateX(0);
+  }
+  80% {
+    transform: translateX(90vw);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+.unlockAudio {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.unlockAudio button {
+  font-size: 1.2rem;
+  color: #18171c;
+  border: none;
+  border-radius: 8px;
+  padding: 1em 2em;
+  cursor: pointer;
+  font-weight: bold;
+} 

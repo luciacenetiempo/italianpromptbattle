@@ -1,0 +1,127 @@
+.header {
+  position: fixed;
+  z-index: 20;
+  left: 4vw;
+  top: auto;
+  bottom: 6vh;
+  width: 65vw;
+  min-width: 320px;
+  /* background-image: url('/assets/SVG/background-header-2.svg'); */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 0;
+  /* box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.9); */
+  /* border: 1.5px solid #18171c; */
+  display: grid;
+  grid-template-columns: 80px auto 1fr fit-content(200px);
+  padding: 25px;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.logoContainer,
+.titleContainer,
+.description,
+.ctaContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logoContainer {
+  border-right: 1.5px solid #18171c;
+  align-items: flex-start;
+  perspective: 1000px;
+}
+
+.titleContainer {
+  border-right: 1.5px solid #18171c;
+  padding-left: 24px;
+  align-items: flex-start;
+}
+
+.title {
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  padding-right: 25px;
+}
+
+.description {
+  border-right: 1.5px solid #18171c;
+  padding-left: 24px;
+  padding-right: 50px;
+  font-size: 1rem;
+  color: #18171c;
+  align-items: flex-start;
+}
+
+.ctaContainer {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  height: 100%;
+  justify-self: center;
+  margin-left:25px;
+}
+
+.ctaButton {
+  background: #dc6f5a;
+  border: none;
+  border-radius: 0;
+  font-size: 0.8rem;
+  outline: 2px solid #18171c;
+  outline-offset: -2px;
+  cursor: pointer;
+  transition: 
+    background 0.25s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.25s cubic-bezier(.4,2,.6,1),
+    transform 0.18s cubic-bezier(.4,2,.6,1);
+}
+
+.ctaButton:hover, .ctaButton:focus {
+  background: linear-gradient(90deg, #dc6f5a 0%, #dcaf6c 100%);
+  box-shadow: 0 0 0 2px #fff, 0 4px 32px 0 #dc6f5a, 0 0 16px 4px #dcaf6c;
+  transform: scale(1.08) translateY(-2px);
+  color: #18171c;
+}
+
+@keyframes rotate-cube {
+  from {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.rotatingCube {
+  transform-style: preserve-3d;
+}
+
+.cube {
+  transform-style: preserve-3d;
+  animation: rotate-cube 10s infinite linear;
+  transform-origin: 91.88px 88.02px;
+  -webkit-animation: rotate-cube 10s infinite linear;
+}
+
+.cubeFace {}
+
+.headerHidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: opacity 0.5s cubic-bezier(.4,1.4,.6,1), transform 0.5s cubic-bezier(.4,1.4,.6,1);
+}
+
+.headerVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.5s cubic-bezier(.4,1.4,.6,1), transform 0.5s cubic-bezier(.4,1.4,.6,1);
+} 
