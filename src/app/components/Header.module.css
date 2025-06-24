@@ -96,7 +96,7 @@
 }
 @media (max-width: 768px) {
   .description {
-    display: none;
+    display: none; 
   }
 }
 
