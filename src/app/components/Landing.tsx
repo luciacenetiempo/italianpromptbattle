@@ -45,7 +45,7 @@ const Landing: React.FC = () => {
 
     let targetTime = 0;
     let easedTime = 0;
-    const easingFactor = 0.2;
+    const easingFactor = 0.1; // Ridotto per un'animazione più morbida e fluida
 
     const handleScroll = () => {
       const el = scrollContainerRef.current;
@@ -56,16 +56,16 @@ const Landing: React.FC = () => {
 
       const scrollTop = window.scrollY;
       const currentScrollFraction = Math.min(1, scrollTop / scrollableHeight);
+      
       setScrollFraction(currentScrollFraction);
-      setScrolled(scrollTop > 10);
 
-      // Logica per mostrare/nascondere Intro
-      const introThreshold = 0.85; 
-      if (currentScrollFraction >= introThreshold) {
-        setShowIntro(true);
-      } else {
-        setShowIntro(false);
-      }
+      // Ottimizzazione: aggiorna lo stato solo se il valore cambia
+      const newScrolled = scrollTop > 10;
+      setScrolled(prev => (prev !== newScrolled ? newScrolled : prev));
+
+      const introThreshold = 0.85;
+      const newShowIntro = currentScrollFraction >= introThreshold;
+      setShowIntro(prev => (prev !== newShowIntro ? newShowIntro : prev));
 
       if (isFinite(video.duration)) {
         targetTime = video.duration * currentScrollFraction;
