@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styles from './GlitchCanvas.module.css';
 
 const BRAND_COLORS = [
@@ -25,21 +25,32 @@ interface GlitchBlock {
 const GlitchCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blocksRef = useRef<GlitchBlock[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+      setIsMobile(window.innerWidth <= 768 || isMobileDevice);
+    };
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   // Interval per creare nuovi blocchi di glitch
   useEffect(() => {
     const interval = setInterval(() => {
-      // 30% di probabilità di triggerare il glitch
-      if (Math.random() > 0.7) {
+      const triggerProbability = isMobile ? 0.9 : 0.7;
+      if (Math.random() > triggerProbability) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Quanti blocchi creare (da 1 a 3)
-        const blockCount = Math.floor(Math.random() * 3) + 1;
+        // Su mobile, crea solo 1 blocco
+        const blockCount = isMobile ? 1 : Math.floor(Math.random() * 3) + 1;
 
         for (let i = 0; i < blockCount; i++) {
-          const blockWidth = Math.random() * (canvas.width / 6) + 50;
-          const blockHeight = Math.random() * 60 + 20;
+          const blockWidth = Math.random() * (canvas.width / (isMobile ? 10 : 6)) + (isMobile ? 30 : 50);
+          const blockHeight = Math.random() * (isMobile ? 40 : 60) + 20;
           
           const newBlock: GlitchBlock = {
             id: Date.now() + Math.random(),
@@ -56,7 +67,7 @@ const GlitchCanvas: React.FC = () => {
     }, 1000); // Controlla ogni secondo
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobile]);
 
   // Loop di animazione per il rendering dei blocchi
   useEffect(() => {

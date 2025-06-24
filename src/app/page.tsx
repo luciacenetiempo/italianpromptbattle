@@ -1,4 +1,4 @@
-import Landing from './components/Landing';
+import HomeClient from './components/HomeClient';
 
 export const metadata = {
   title: "Italian Prompt Battle – La sfida creativa italiana",
@@ -18,5 +18,5 @@ export const metadata = {
 };
 
 export default function Home() {
-  return <Landing />;
+  return <HomeClient />;
 }

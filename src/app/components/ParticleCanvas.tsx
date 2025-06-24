@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styles from './ParticleCanvas.module.css';
 
-const NUM_PARTICLES = 80;
+const DESKTOP_PARTICLES = 80;
+const MOBILE_PARTICLES = 25;
+
 const COLORS = ['#fffbe6', '#ffe7a3', '#ffd700', '#fff', '#ffecb3'];
 const CUBE_SVGS = [
   '/assets/SVG/cube-1.svg',
@@ -30,6 +32,17 @@ interface Particle {
 
 const ParticleCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+      setIsMobile(window.innerWidth <= 768 || isMobileDevice);
+    };
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,8 +78,11 @@ const ParticleCanvas: React.FC = () => {
     }
     window.addEventListener('resize', handleResize);
 
+    const numParticles = isMobile ? MOBILE_PARTICLES : DESKTOP_PARTICLES;
+    const cubeProbability = isMobile ? 0.95 : 0.8; // Meno cubi su mobile
+
     const createParticle = (): Particle => {
-      const isCube = Math.random() > 0.8;
+      const isCube = Math.random() > cubeProbability;
       if (isCube && loadedImages.length > 0) {
         return {
           type: 'cube',
@@ -95,7 +111,7 @@ const ParticleCanvas: React.FC = () => {
     };
 
     const particles: Particle[] = Array.from(
-      { length: NUM_PARTICLES },
+      { length: numParticles },
       createParticle
     );
 
@@ -156,7 +172,7 @@ const ParticleCanvas: React.FC = () => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   return <canvas ref={canvasRef} className={styles.particleCanvas} />;
 };

@@ -1,9 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './Intro.module.css';
 
-const Intro: React.FC = () => {
-  const [videoMode, setVideoMode] = useState<'voice' | 'background'>('voice');
+interface IntroProps {
+  onSpeakingEnd?: () => void;
+  hasSpeakingVideoPlayed?: boolean;
+}
+
+const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed }) => {
+  const [videoMode, setVideoMode] = useState<'voice' | 'background'>(
+    hasSpeakingVideoPlayed ? 'background' : 'voice'
+  );
   const videoRef = useRef<HTMLVideoElement>(null);
+  const introContainerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [detectionComplete, setDetectionComplete] = useState(false);
 
@@ -20,7 +28,37 @@ const Intro: React.FC = () => {
 
   const handleVoiceVideoEnd = () => {
     setVideoMode('background');
+    onSpeakingEnd?.(); // Comunica la fine del video
   };
+
+  // Effetto Parallasse per il video di background
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (videoMode !== 'background' || !videoEl) return;
+
+    const handleParallax = () => {
+      const container = introContainerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      
+      // Quando il container inizia a uscire dalla parte superiore della viewport
+      if (rect.top < 0) {
+        const scrollDistance = -rect.top;
+        const parallaxAmount = scrollDistance * 0.6; // Aumentato per più visibilità
+        const opacity = Math.max(0, 1 - (scrollDistance / rect.height));
+        
+        videoEl.style.transform = `translateY(${parallaxAmount}px)`;
+        videoEl.style.opacity = `${opacity}`;
+      } else {
+        videoEl.style.transform = 'translateY(0px)';
+        videoEl.style.opacity = '1';
+      }
+    };
+    
+    window.addEventListener('scroll', handleParallax, { passive: true });
+    return () => window.removeEventListener('scroll', handleParallax);
+  }, [videoMode]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -66,7 +104,7 @@ const Intro: React.FC = () => {
     : (isMobile ? '/video/ipb-background-2-m.webm' : '/video/ipb-background-2.webm');
 
   return (
-    <div className={styles.introContainer}>
+    <div className={styles.introContainer} ref={introContainerRef}>
       {detectionComplete && (
         <video
           key={`${videoMode}-${isMobile ? 'mobile' : 'desktop'}`} // Forza il re-mount anche al cambio di device

@@ -8,7 +8,12 @@ import Preloader from './Preloader';
 import Intro from './Intro';
 import Head from 'next/head';
 
-const Landing: React.FC = () => {
+interface LandingProps {
+  onSpeakingEnd: () => void;
+  hasSpeakingVideoPlayed: boolean;
+}
+
+const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const songAudioRef = useRef<HTMLAudioElement>(null);
   const [scrollFraction, setScrollFraction] = useState(0);
@@ -228,7 +233,7 @@ const Landing: React.FC = () => {
             </video>
             {showIntro && (
               <div className={styles.introOverlayFade}>
-                <Intro />
+                <Intro onSpeakingEnd={onSpeakingEnd} hasSpeakingVideoPlayed={hasSpeakingVideoPlayed} />
               </div>
             )}
             <div className={styles.contentContainer}>

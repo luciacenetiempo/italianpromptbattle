@@ -1,0 +1,149 @@
+.visionContainer {
+  background-color: #000000; /* Sfondo scuro come da screenshot */
+  color: #fff;
+  padding: 4vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Spinge il marquee in basso */
+  height: 100vh;
+  position: sticky; /* Lo rende "ancorabile" */
+  top: 0; /* Si ancora alla parte superiore della viewport */
+  overflow: hidden; /* Nasconde il testo che scorre fuori */
+}
+
+.textContainer {
+  padding-top: 8vh;
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  align-items: center;
+}
+
+.leftColumn {
+  flex: 1;
+}
+
+.rightColumn {
+  flex: 1;
+  padding-left: 2rem;
+}
+
+.title {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #fff;
+  line-height: 1;
+  opacity: 0; /* Nascondi gli elementi all'inizio */
+}
+
+.light {
+  font-weight: 300;
+}
+
+.description {
+  font-size: clamp(1.5rem, 2vw, 1.2rem);
+  line-height: 1.8;
+  max-width: 45ch; /* Limita la larghezza per leggibilità */
+  color: #e0e0e0;
+  font-weight: 300;
+  opacity: 0; /* Nascondi gli elementi all'inizio */
+}
+.description strong {
+  font-weight: 600;
+}
+
+.animateTitle, .animateDescription {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animateDescription {
+  animation-delay: 0.4s; /* Ritarda l'animazione della descrizione */
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.marqueeContainer {
+  width: 100%;
+}
+
+.marqueeRow {
+  width: 100%;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.marqueeContent {
+  display: inline-block;
+  color: #888; /* Colore più scuro per i keywords */
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 500;
+  animation-duration: 60s; /* Durata animazione */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.marqueeRow.left .marqueeContent {
+  animation-name: scroll-left;
+}
+.marqueeRow.right .marqueeContent {
+  animation-name: scroll-right;
+}
+
+.keywordItem {
+  margin-right: 2rem;
+}
+
+.separator {
+  color: #555;
+  margin-left: 2rem;
+}
+
+@keyframes scroll-left {
+  from { transform: translateX(0%); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0%); }
+}
+
+@media (max-width: 768px) {
+  .visionContainer {
+    justify-content: flex-start;
+  }
+  .textContainer {
+    max-width: 100%;
+    padding-top: 4vh;
+    flex-direction: column;
+    text-align: center;
+  }
+  .title {
+    text-align: left;
+    margin-bottom: 0;
+  }
+  .description {
+    text-align: left;
+    max-width: 80%;
+    font-size: 1.15rem;
+    line-height: 1.2em;
+  }
+  .rightColumn {
+    padding-left: 0;
+    padding-bottom: 4vh;
+  }
+
+  .leftColumn {
+    width: 100%
+  }
+} 
