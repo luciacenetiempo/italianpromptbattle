@@ -8,33 +8,7 @@ import Preloader from './Preloader';
 import Intro from './Intro';
 import Head from 'next/head';
 
-const NUM_PARTICLES = 80;
-const COLORS = ['#fffbe6', '#ffe7a3', '#ffd700', '#fff', '#ffecb3'];
-const CUBE_SVGS = [
-  '/assets/SVG/cube-1.svg',
-  '/assets/SVG/cube-2.svg',
-  '/assets/SVG/cube-3.svg',
-];
-
-function randomBetween(a: number, b: number) {
-  return a + Math.random() * (b - a);
-}
-
-interface Particle {
-  type: 'circle' | 'cube';
-  x: number;
-  y: number;
-  r: number;
-  speed: number;
-  alpha: number;
-  color?: string;
-  image?: HTMLImageElement;
-  rotation: number;
-  rotationSpeed: number;
-}
-
 const Landing: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const songAudioRef = useRef<HTMLAudioElement>(null);
   const [scrollFraction, setScrollFraction] = useState(0);
@@ -44,141 +18,30 @@ const Landing: React.FC = () => {
   const [isSongPlaying, setIsSongPlaying] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [maxHeaderProgress, setMaxHeaderProgress] = useState(0);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const loadedImages: HTMLImageElement[] = [];
-    let imagesLoaded = 0;
-    CUBE_SVGS.forEach(src => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        imagesLoaded++;
-        if (imagesLoaded === CUBE_SVGS.length) {
-          // Inizia l'animazione solo quando tutte le immagini sono caricate
-          animate();
-        }
-      };
-      loadedImages.push(img);
-    });
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    function handleResize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      if (!canvas) return;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    window.addEventListener('resize', handleResize);
-
-    const createParticle = (): Particle => {
-      const isCube = Math.random() > 0.8; // 20% di probabilità di essere un cubo
-      if (isCube && loadedImages.length > 0) {
-        return {
-          type: 'cube',
-          x: randomBetween(0, width),
-          y: randomBetween(-height, 0),
-          r: randomBetween(20, 40),
-          speed: randomBetween(0.5, 1.5),
-          alpha: randomBetween(0.7, 1),
-          image: loadedImages[Math.floor(Math.random() * loadedImages.length)],
-          rotation: randomBetween(0, Math.PI * 2),
-          rotationSpeed: randomBetween(-0.01, 0.01),
-        };
-      } else {
-        return {
-          type: 'circle',
-          x: randomBetween(0, width),
-          y: randomBetween(-height, 0),
-          r: randomBetween(1, 3),
-          speed: randomBetween(0.5, 2.5),
-          alpha: randomBetween(0.5, 1),
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
-          rotation: 0,
-          rotationSpeed: 0,
-        };
-      }
+    const checkIsMobile = () => {
+      // Considera anche l'user agent per una detección più affidabile
+      const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+      setIsMobile(window.innerWidth <= 768 || isMobileDevice);
     };
-
-    // Particelle
-    const particles: Particle[] = Array.from(
-      { length: NUM_PARTICLES },
-      createParticle
-    );
-
-    function draw() {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, width, height);
-      for (const p of particles) {
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        
-        if (p.type === 'cube' && p.image) {
-          ctx.translate(p.x + p.r / 2, p.y + p.r / 2);
-          ctx.rotate(p.rotation);
-          ctx.drawImage(p.image, -p.r / 2, -p.r / 2, p.r, p.r);
-        } else if (p.type === 'circle') {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
-          ctx.fillStyle = p.color!;
-          ctx.shadowColor = p.color!;
-          ctx.shadowBlur = 8;
-          ctx.fill();
-        }
-
-        ctx.restore();
-      }
-    }
-
-    function update() {
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.y += p.speed;
-        p.x += Math.sin(p.y / 40) * 0.5; // leggero movimento orizzontale
-        p.alpha -= 0.001 * p.speed;
-        
-        if (p.type === 'cube') {
-          p.rotation += p.rotationSpeed;
-        }
-
-        if (p.y - p.r > height || p.alpha <= 0.1) {
-          // resetta la particella
-          particles[i] = createParticle();
-        }
-      }
-    }
-
-    let running = true;
-    let animationFrameId: number;
-    function animate() {
-      if (!running) return;
-      update();
-      draw();
-      animationFrameId = requestAnimationFrame(animate);
-    }
-    // L'animazione parte dall'onload delle immagini
-
-    return () => {
-      running = false;
-      window.removeEventListener('resize', handleResize);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    const logVideoSource = () => {
+      if (video) {
+        console.log(`[Landing] Video caricato: ${video.currentSrc}`);
+      }
+    };
+    video.addEventListener('canplay', logVideoSource);
 
     let targetTime = 0;
     let easedTime = 0;
@@ -195,6 +58,14 @@ const Landing: React.FC = () => {
       const currentScrollFraction = Math.min(1, scrollTop / scrollableHeight);
       setScrollFraction(currentScrollFraction);
       setScrolled(scrollTop > 10);
+
+      // Logica per mostrare/nascondere Intro
+      const introThreshold = 0.85; 
+      if (currentScrollFraction >= introThreshold) {
+        setShowIntro(true);
+      } else {
+        setShowIntro(false);
+      }
 
       if (isFinite(video.duration)) {
         targetTime = video.duration * currentScrollFraction;
@@ -233,11 +104,14 @@ const Landing: React.FC = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       video.removeEventListener('loadedmetadata', onMetadataLoaded);
+      if (video) {
+        video.removeEventListener('canplay', logVideoSource);
+      }
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   // Timeout per fallback dopo 10s
   useEffect(() => {
@@ -273,8 +147,12 @@ const Landing: React.FC = () => {
 
   const headerStart = 0.5;
   const headerEnd = 0.7;
-  let headerProgress = (visibleFraction - headerStart) / (headerEnd - headerStart);
-  headerProgress = Math.max(0, Math.min(1, headerProgress));
+  let currentHeaderProgress = (visibleFraction - headerStart) / (headerEnd - headerStart);
+  currentHeaderProgress = Math.max(0, Math.min(1, currentHeaderProgress));
+
+  if (currentHeaderProgress > maxHeaderProgress) {
+    setMaxHeaderProgress(currentHeaderProgress);
+  }
 
   return (
     <>
@@ -290,9 +168,14 @@ const Landing: React.FC = () => {
         <meta name="twitter:description" content="Partecipa all'Italian Prompt Battle: la prima competizione italiana dedicata alla creatività con l'AI. Scopri, impara, sfida e vinci!" />
         <meta name="twitter:image" content="/assets/images/og-image.jpg" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="preload" as="video" href="/video/ipb-background-2.mp4" />
-        <link rel="preload" as="video" href="/video/ipb-intro.mp4" />
-        <link rel="preload" as="video" href="/video/ipb-voice.mp4" />
+
+        {/* Preload dei video in entrambi i formati */}
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-background-2-m.webm" : "/video/ipb-background-2.webm"} type="video/webm" />
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-background-2-m.mp4" : "/video/ipb-background-2.mp4"} type="video/mp4" />
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-intro-m.webm" : "/video/ipb-intro.webm"} type="video/webm" />
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-intro-m.mp4" : "/video/ipb-intro.mp4"} type="video/mp4" />
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-speaking-m.webm" : "/video/ipb-speaking.webm"} type="video/webm" />
+        <link rel="preload" as="video" href={isMobile ? "/video/ipb-speaking-m.mp4" : "/video/ipb-speaking.mp4"} type="video/mp4" />
       </Head>
       <div style={{ background: '#000', position: 'relative' }}>
         <audio ref={songAudioRef} src="/assets/audio/song.mp3" loop />
@@ -332,13 +215,15 @@ const Landing: React.FC = () => {
         <div ref={scrollContainerRef} className={styles.scrollContainer}>
           <div className={styles.stickyContainer}>
             <video
+              key={isMobile ? 'mobile' : 'desktop'}
               ref={videoRef}
               className={styles.videoBackground}
               muted
               playsInline
               preload="auto"
             >
-              <source src="/video/ipb-intro.mp4" type="video/mp4" />
+              <source src={isMobile ? "/video/ipb-intro-m.webm" : "/video/ipb-intro.webm"} type="video/webm" />
+              <source src={isMobile ? "/video/ipb-intro-m.mp4" : "/video/ipb-intro.mp4"} type="video/mp4" />
               Il tuo browser non supporta il tag video.
             </video>
             {showIntro && (
@@ -346,21 +231,19 @@ const Landing: React.FC = () => {
                 <Intro />
               </div>
             )}
-            <canvas ref={canvasRef} className={styles.particleCanvas} />
             <div className={styles.contentContainer}>
               <SplitFlapAnimation
                 text={titleText}
                 className={`text-white text-left font-semibold drop-shadow-lg ${styles.mainTitle}`}
                 visibleCount={visibleCount}
-                onAnimationComplete={() => setShowIntro(true)}
               />
             </div>
             <Header
               className={styles.header}
               style={{
-                opacity: headerProgress,
-                transform: `translateY(${(1 - headerProgress) * 100}%)`,
-                pointerEvents: headerProgress > 0.98 ? 'auto' : 'none',
+                opacity: maxHeaderProgress,
+                transform: `translateY(${(1 - maxHeaderProgress) * 100}%)`,
+                pointerEvents: maxHeaderProgress > 0.98 ? 'auto' : 'none',
                 transition: 'opacity 0.2s linear, transform 0.2s linear',
               }}
             />

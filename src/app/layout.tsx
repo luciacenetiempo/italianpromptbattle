@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "../../public/fonts/gellix.css";
+import ParticleCanvas from "@/app/components/ParticleCanvas";
+import GlitchCanvas from "@/app/components/GlitchCanvas";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,6 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <ParticleCanvas />
+        <GlitchCanvas />
         {children}
       </body>
     </html>

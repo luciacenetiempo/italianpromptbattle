@@ -168,7 +168,7 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
         <button
           className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}
         >
-          STAY CONNECTED
+          ENTRA IN<br/>WAIT LIST
         </button>
       </div>
     </div>

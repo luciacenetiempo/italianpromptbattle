@@ -1,0 +1,10 @@
+.glitchCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999; /* Assicura che sia sopra a tutto */
+  opacity: 1; /* Aumentiamo l'opacità per renderlo più visibile */
+} 
