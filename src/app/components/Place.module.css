@@ -1,0 +1,124 @@
+.placeSection {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  background: #000;
+}
+
+.videoBackground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(90deg, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.2) 100%);
+}
+
+.contentBox {
+  margin-left: 6vw;
+  max-width: 600px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.title {
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+.button {
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: 2em;
+  padding: 1.1em 2.5em;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  transition: background 0.18s, color 0.18s, transform 0.18s;
+}
+.button:hover, .button:focus {
+  background: #222;
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.venueInfo {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5rem;
+}
+
+.venueLabel {
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  font-weight: 400;
+  min-width: 90px;
+}
+
+.description {
+  font-size: 1.15rem;
+  color: #e0e0e0;
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 350px;
+}
+
+@media (max-width: 900px) {
+  .contentBox {
+    margin-left: 3vw;
+    max-width: 90vw;
+  }
+  .venueInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+  .description {
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .contentBox {
+    width: 100vw;
+        padding: 4vw;
+        max-width: 90vw;
+        justify-content: center;
+  }
+  .title {
+    font-size: 2rem;
+  }
+  .button {
+    font-size: 0.95rem;
+    padding: 0.8em 1.5em;
+  }
+} 

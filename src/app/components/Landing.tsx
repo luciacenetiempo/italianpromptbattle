@@ -68,7 +68,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
       const newScrolled = scrollTop > 10;
       setScrolled(prev => (prev !== newScrolled ? newScrolled : prev));
 
-      const introThreshold = 0.85;
+      const introThreshold = 1;
       const newShowIntro = currentScrollFraction >= introThreshold;
       setShowIntro(prev => (prev !== newShowIntro ? newShowIntro : prev));
 

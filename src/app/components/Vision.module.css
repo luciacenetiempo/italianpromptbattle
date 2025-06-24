@@ -4,7 +4,7 @@
   padding: 4vw;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Spinge il marquee in basso */
+  justify-content: flex-start; /* Spinge il marquee in basso */
   height: 100vh;
   position: sticky; /* Lo rende "ancorabile" */
   top: 0; /* Si ancora alla parte superiore della viewport */
