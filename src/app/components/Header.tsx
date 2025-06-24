@@ -160,8 +160,8 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
       </div>
       {/* Paragrafo breve */}
       <div className={styles.description}>
-        Unisciti alla community italiana dei prompt creator e porta la tua
-        creatività al prossimo livello.
+        <span className={styles.descriptionText}>Unisciti alla community italiana dei prompt creator e porta la tua
+        creatività al prossimo livello.</span>
       </div>
       {/* CTA */}
       <div className={styles.ctaContainer}>

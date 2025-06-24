@@ -91,7 +91,9 @@
   color: #18171c;
   align-items: flex-start;
 }
-
+.descriptionText{
+  max-width: 500;
+}
 @media (max-width: 768px) {
   .description {
     display: none;

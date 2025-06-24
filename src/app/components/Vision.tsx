@@ -4,13 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './Vision.module.css';
 
 const KEYWORDS_ROW1 = [
-  'Web3', 'Artificial Intelligence', 'Branding Strategy', 'Service Design'
+  'Prompt Craft', 'Immaginazione', 'AI Vision', 'Realtime Creation'
 ];
 const KEYWORDS_ROW2 = [
-  'UI/UX/CX', 'Creative Coding', 'Digital Illustration', 'Motion Graphics'
+  'Augmented Creativity', 'Creatività', 'Prompt vs Prompt', 'Duello'
 ];
 const KEYWORDS_ROW3 = [
-  'Retail & ECommerce', 'Experience Marketing', 'Interaction Design', 'Prompt Engineering'
+  'Battle', 'Prompting', 'Visual Syntax', 'Prompt'
 ];
 
 const MarqueeRow = ({ keywords, direction }: { keywords: string[], direction: 'left' | 'right' }) => (
@@ -62,8 +62,9 @@ const Vision: React.FC = () => {
         </div>
         <div className={styles.rightColumn}>
           <p className={`${styles.description} ${isVisible ? styles.animateDescription : ''}`}>
-          Una nuova forma d&apos;arte, una sfida in tempo reale.<br/>
-          <strong>Artisti, creativə e AI si sfidano generando immagini uniche</strong>, da prompt condivisi, davanti a un pubblico vivo.
+          Non è una gara di immagini.<br/>È un linguaggio in codice.<br/>
+          Dove il tempo conta e la visione si trasforma in impatto.<br/>
+          <strong>Artisti, creativə e AI si sfidano generando immagini uniche</strong>, davanti a un pubblico vivo.
           </p>
         </div>
       </div>
