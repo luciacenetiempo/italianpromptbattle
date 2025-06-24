@@ -5,6 +5,8 @@ import Landing from './Landing';
 import Vision from './Vision';
 import Gallery from './Gallery';
 import Place from './Place';
+import Target from './Target';
+
 
 export default function HomeClient() {
   const [isVisionVisible, setIsVisionVisible] = useState(false);
@@ -56,6 +58,7 @@ export default function HomeClient() {
         </div>
       )}
       {isVisionVisible && <Place />}
+      {isVisionVisible && <Target />}
     </main>
   );
 } 

@@ -28,7 +28,7 @@ const Place: React.FC = () => {
             </p>
           </div>
           <button className={styles.button}>
-            SEGNALA UNO SPAZIO PERFETTO
+          ↗ SEGNALA UNO SPAZIO PERFETTO
           </button>
         </div>
       </div>

@@ -26,3 +26,6 @@ body {
   font-family: 'Gellix', Arial, Helvetica, sans-serif;
   font-weight: 400;
 }
+strong{
+  font-weight: 800;
+}
