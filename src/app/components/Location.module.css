@@ -47,49 +47,6 @@
     gap: 0.2em;
 }
 
-.ctaEmail {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    background: #fff;
-    color: #222;
-    font-size: 1.5rem;
-    font-weight: 500;
-    border-radius: 2em;
-    padding: 0.6em 2.8em 0.6em 1.2em;
-    text-decoration: none;
-    min-width: 260px;
-    margin-right: 0.5em;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s;
-}
-
-.ctaEmail:hover {
-    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
-}
-
-.ctaArrow {
-    position: absolute;
-    right: 0.5em;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-    background-color: #8E81D5;
-    overflow: hidden;
-    border-radius: 100%;
-    -webkit-border-radius: 100%;
-    -moz-border-radius: 100%;
-    -ms-border-radius: 100%;
-    -o-border-radius: 100%;
-}
-
-.ctaArrow svg{
-    width: 100%;
-}
-
-
 .thirdLineWrapper {
     display: flex;
     align-items: center;
@@ -126,22 +83,23 @@
         width: 60%;
         margin-top: -20vh;
     }
-    .right {
-        justify-content: center;
+    .right { 
+        justify-content: flex-start;
+        align-items: flex-start;
     }
     .secondLineWrapper, .detailsText {
         margin-left: 0;
         flex-flow: column;
+        justify-content: flex-start;
+        align-items: flex-start;
     }
-    .firstLine, .secondLineText {
+    .firstLine{
         font-size: clamp(2rem, 10vw, 8rem);
-    }
-    .ctaEmail {
-        min-width: 140px;
-        padding: 0.5em 2.2em 0.5em 1em;
-        font-size: 1.8rem;
-        width: 100%;
-        margin: 1.5rem 0;
+        margin-bottom: 1.5rem;
+    }    
+    .secondLineText {
+        font-size: clamp(2rem, 10vw, 8rem);
+        margin-top: 1.5rem;
     }
     .thirdLineWrapper {
         margin-left: 0;
@@ -153,4 +111,26 @@
         font-size: clamp(2rem, 10vw, 8rem);
         margin-bottom: 1.0rem;
     }
-} 
+}
+
+@keyframes rotate-cube {
+  from {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.rotatingCube {
+  transform-style: preserve-3d;
+}
+
+.cube {
+  transform-style: preserve-3d;
+  animation: rotate-cube 10s infinite linear;
+  transform-origin: 91.88px 88.02px;
+  -webkit-animation: rotate-cube 10s infinite linear;
+}
+
+.cubeFace {} 

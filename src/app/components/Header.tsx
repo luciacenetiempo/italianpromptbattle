@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Header.module.css';
+import CanvasHeartCube from './CanvasHeartCube';
 
 interface HeaderProps {
   className?: string;
@@ -11,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
     <div className={`${styles.header} ${className || ''}`} style={style}>
       {/* Logo */}
       <div className={styles.logoContainer}>
-        <svg
+        {/* <svg
           id="uuid-7d67fecf-5ba1-4594-a2fc-e35cbaf6ae28"
           xmlns="http://www.w3.org/2000/svg"
           xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -138,7 +139,9 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
               />
             </g>
           </g>
-        </svg>
+        </svg> */}
+
+      <CanvasHeartCube size={70} />
       </div>
       {/* Titolo */}
       <div className={styles.titleContainer}>
@@ -165,9 +168,7 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
       </div>
       {/* CTA */}
       <div className={styles.ctaContainer}>
-        <button
-          className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}
-        >
+        <button className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}>
           ENTRA IN<br/>WAIT LIST
         </button>
       </div>

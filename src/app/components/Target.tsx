@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ctaStyles from './Cta.module.css';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -94,8 +95,14 @@ const Target: React.FC = () => {
           <div className={styles.rightText}>
           La creatività<br/>non ha un ruolo...<br/>Ha coraggio!
           </div>
-          <button className={styles.ctaButton}>
-            ↗ Preiscriviti alla battle
+          <button className={ctaStyles.ctaEmail}>
+            <span>↗ waiting list</span>
+            <span className={ctaStyles.ctaArrow}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 12H16" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
           </button>
         </div>
       </div>
