@@ -49,8 +49,10 @@ const Target: React.FC = () => {
       <div className={styles.contentColumns}>
         <div className={styles.left}>
           <div className={styles.descriptionBox}>
-          Call aperta a chi ha visione, intuito, voglia di mettersi in gioco. Conta l’audacia creativa, il desiderio di esplorare, la capacità di evocare mondi con le parole.<br/>Che tu lavori con le immagini, con il testo o con le idee...<br/>
-          <strong>Questo spazio ti appartiene!</strong>
+            <h2>Raccogli la sfida!</h2>
+            <p>Call aperta a chi ha visione, intuito, voglia di mettersi in gioco.</p>
+            <p>Conta l’audacia creativa, il desiderio di esplorare, la capacità di evocare mondi con le parole.<br/>Che tu lavori con le immagini, con il testo o con le idee...</p>
+            <p><strong>Questo spazio ti appartiene!</strong></p>
           </div>
         </div>
         <div className={styles.right}>
@@ -58,7 +60,7 @@ const Target: React.FC = () => {
           La creatività<br/>non ha un ruolo...<br/>Ha coraggio!
           </div>
           <button className={styles.ctaButton}>
-            ↗ Planifier une visio
+            ↗ Preiscriviti alla battle
           </button>
         </div>
       </div>

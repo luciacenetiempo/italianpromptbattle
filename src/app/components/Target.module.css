@@ -2,8 +2,20 @@
   width: 100vw;
   min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   background: #000000;
+}
+
+.targetSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%);
+  z-index: 21;
+  pointer-events: none;
 }
 
 .marqueeWrapper {
@@ -55,7 +67,7 @@
   height: 100vh;
   width: auto;
   aspect-ratio: 2/3;
-  z-index: 11;
+  z-index: 49;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,7 +106,7 @@
   flex-direction: row;
   width: 100vw;
   height: 100vh;
-  z-index: 20;
+  z-index: 49;
 }
 
 .left {
@@ -147,7 +159,7 @@
 
 .descriptionBox {
   font-size: 1.15rem;
-  color: #e0e0e0;
+  color: #ffffff;
   line-height: 1.7;
   font-weight: 300;
   max-width: 80%;
@@ -155,6 +167,23 @@
   margin-top: 0;
   background: none;
   text-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+
+.descriptionBox h2{
+  font-size: 2.15rem;
+  line-height: 1.7;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.descriptionBox p{
+  font-size: 1.15rem;
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  margin-top: 0;
 }
 
 .highlightText {
@@ -202,7 +231,7 @@
   cursor: pointer;
   box-shadow: 0 2px 16px rgba(0,0,0,0.12);
   transition: background 0.18s, color 0.18s, transform 0.18s;
-  margin-top: 0.2rem;
+  margin-top: 2.2rem;
 }
 .ctaButton:hover, .ctaButton:focus {
   background: #222;
@@ -225,7 +254,6 @@
 
 @media (max-width: 900px) {
   .targetSection{        
-    padding-top: 4vh;
     padding-bottom: 20vh;
   }
   .contentColumns {
@@ -233,7 +261,7 @@
     align-items: center;
     width: 100vw;
     height: auto;
-    margin-top: 20vh;
+    margin-top: 25vh;
   }
   .left, .right {
     width: 100vw;
@@ -242,11 +270,21 @@
     height: auto;
     padding: 4vw;
   }
+  .left{
+    justify-content: flex-start;
+  }
   .descriptionBox {
-    max-width: 95vw;
+    width: 100%;
+    max-width: 100%;
     font-size: 1.05rem;
     margin-bottom: 0;
-  }
+  }  
+  .descriptionBox p,
+  .descriptionBox h2{
+    width: 100%;
+    max-width: 100%;
+  }  
+
   .rightText {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -269,7 +307,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 11;
     margin: 0 auto 2vw auto;
   }
   .silhouette {
@@ -282,5 +319,15 @@
   }
   .marqueeContent {
     font-size: 4.2rem;
+  }
+  .marqueeWrapper{
+    z-index: 25;
+    pointer-events: none;
+    justify-content: center;
+    width: 100vw;
+    display: flex;
+    position: absolute;
+    top: 6.5vh;
+    left: 0;
   }
 }

@@ -25,7 +25,7 @@ export default function HomeClient() {
     if (!gallery) return;
     const scrollWidth = (gallery as HTMLElement).scrollWidth;
     const clientWidth = (galleryWrapperRef.current as HTMLElement).clientWidth;
-    setGalleryHeight(scrollWidth - clientWidth + window.innerHeight);
+    setGalleryHeight(scrollWidth - clientWidth + window.innerHeight * 2);
   }, [isVisionVisible]);
 
   return (
@@ -54,6 +54,16 @@ export default function HomeClient() {
             }}
           >
             <Gallery style={{ width: '100vw', height: '100vh' }} />
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              height: '200px',
+              background: 'linear-gradient(to top, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%)',
+              pointerEvents: 'none',
+              zIndex: 3,
+            }}></div>
           </div>
         </div>
       )}
