@@ -1,5 +1,6 @@
 .placeSection {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -120,6 +121,7 @@
   .contentBox {
     margin-left: 3vw;
     max-width: 90vw;
+    padding-bottom: 20vh;
   }
   .venueInfo {
     flex-direction: column;
@@ -134,12 +136,13 @@
 @media (max-width: 600px) {
   .contentBox {
     width: 100vw;
-        padding: 4vw;
-        max-width: 90vw;
-        justify-content: center;
+    padding: 4vw;
+    max-width: 90vw;
+    justify-content: center;
+    padding-bottom: 20vh;
   }
   .title {
-    font-size: 2rem;
+    font-size: clamp(3rem, 10vw, 8rem);
   }
   .button {
     font-size: 0.95rem;

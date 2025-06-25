@@ -25,6 +25,7 @@ body {
   color: var(--foreground);
   font-family: 'Gellix', Arial, Helvetica, sans-serif;
   font-weight: 400;
+  background-color: black;
 }
 strong{
   font-weight: 800;

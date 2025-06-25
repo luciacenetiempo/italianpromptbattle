@@ -34,7 +34,6 @@
   margin-bottom: 2rem;
   color: #fff;
   line-height: 1;
-  opacity: 0; /* Nascondi gli elementi all'inizio */
 }
 
 .light {
@@ -47,29 +46,9 @@
   max-width: 45ch; /* Limita la larghezza per leggibilità */
   color: #e0e0e0;
   font-weight: 300;
-  opacity: 0; /* Nascondi gli elementi all'inizio */
 }
 .description strong {
   font-weight: 600;
-}
-
-.animateTitle, .animateDescription {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-.animateDescription {
-  animation-delay: 0.4s; /* Ritarda l'animazione della descrizione */
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .marqueeContainer {

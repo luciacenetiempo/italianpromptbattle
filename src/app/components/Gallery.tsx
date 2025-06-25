@@ -3,6 +3,11 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import styles from './Gallery.module.css';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 interface ImageType {
     src: string;
@@ -40,6 +45,7 @@ const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * 
 const Gallery = ({ style }: GalleryProps) => {
     const galleryRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const quoteRef = useRef<HTMLDivElement>(null);
     const scrollState = useRef({ targetX: 0, currentX: 0, speed: 0.08 });
     const parallaxState = useRef(Array(NUM_COLUMNS).fill(0).map(() => ({ targetY: 0, currentY: 0 })));
     const isActive = useRef(false);
@@ -56,6 +62,38 @@ const Gallery = ({ style }: GalleryProps) => {
         
         return newColumns;
     }, []);
+
+    useGSAP(() => {
+        const wrappers = gsap.utils.toArray<HTMLElement>(`.${styles.imageWrapper}`);
+        wrappers.forEach((wrapper) => {
+            gsap.from(wrapper, {
+                scrollTrigger: {
+                    trigger: wrapper,
+                    start: "left 90%",
+                    end: "right 10%",
+                    horizontal: true,
+                    scrub: 1,
+                },
+                scale: 0.8,
+                opacity: 0,
+                filter: 'blur(10px)',
+                ease: 'power3.out'
+            });
+        });
+
+        gsap.from(quoteRef.current, {
+            scrollTrigger: {
+                trigger: quoteRef.current,
+                start: 'top 90%',
+                end: 'bottom 20%',
+                scrub: 1,
+            },
+            scale: 0.8,
+            opacity: 0,
+            filter: 'blur(10px)',
+            ease: 'power3.out'
+        });
+    }, { scope: galleryRef });
 
     const runAnimation = useCallback(() => {
         if (!containerRef.current || !galleryRef.current) return;
@@ -159,7 +197,7 @@ const Gallery = ({ style }: GalleryProps) => {
                     </div>
                 ))}
             </div>
-            <div className={styles.quote}>
+            <div className={styles.quote} ref={quoteRef}>
                 <h2>Ogni immagine è il frutto di una scelta.<br/>
                 Ogni scelta è il riflesso della tua immaginazione.</h2>
             </div>

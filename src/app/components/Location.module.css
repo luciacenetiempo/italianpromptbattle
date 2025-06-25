@@ -1,0 +1,156 @@
+.locationSection {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    padding: 0 5vw;
+}
+
+.left {
+    flex: 0 0 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.textBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.05;
+    gap: 0.15em;
+}
+
+.firstLine, .secondLineText, .thirdLineText {
+    text-transform: uppercase;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+}
+
+.secondLineWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.1em;
+    gap: 0.2em;
+}
+
+.ctaEmail {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    background: #fff;
+    color: #222;
+    font-size: 1.5rem;
+    font-weight: 500;
+    border-radius: 2em;
+    padding: 0.6em 2.8em 0.6em 1.2em;
+    text-decoration: none;
+    min-width: 260px;
+    margin-right: 0.5em;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+}
+
+.ctaEmail:hover {
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+}
+
+.ctaArrow {
+    position: absolute;
+    right: 0.5em;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    background-color: #8E81D5;
+    overflow: hidden;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+}
+
+.ctaArrow svg{
+    width: 100%;
+}
+
+
+.thirdLineWrapper {
+    display: flex;
+    align-items: center;
+    margin-top: 0.1em;
+    gap: 0.7em;
+}
+
+.thirdLineText {
+    letter-spacing: 0.01em;
+}
+
+.detailsText {
+    color: #b6ff6c;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    margin: 0;
+    text-transform: uppercase;
+    margin-left: 2vw;
+}
+
+@media (max-width: 900px) {
+    .locationSection {
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content: flex-start;
+        height: auto;
+        position: relative;
+        padding-bottom: 10vh;
+    }
+    .left {        
+        margin-bottom: 0px;
+        width: 60%;
+        margin-top: -20vh;
+    }
+    .right {
+        justify-content: center;
+    }
+    .secondLineWrapper, .detailsText {
+        margin-left: 0;
+        flex-flow: column;
+    }
+    .firstLine, .secondLineText {
+        font-size: clamp(2rem, 10vw, 8rem);
+    }
+    .ctaEmail {
+        min-width: 140px;
+        padding: 0.5em 2.2em 0.5em 1em;
+        font-size: 1.8rem;
+        width: 100%;
+        margin: 1.5rem 0;
+    }
+    .thirdLineWrapper {
+        margin-left: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2em;
+    }
+    .thirdLineText {
+        font-size: clamp(2rem, 10vw, 8rem);
+        margin-bottom: 1.0rem;
+    }
+} 

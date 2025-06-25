@@ -6,13 +6,32 @@ import Vision from './Vision';
 import Gallery from './Gallery';
 import Place from './Place';
 import Target from './Target';
-
+import Location from './Location';
+import Lenis from 'lenis';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export default function HomeClient() {
   const [isVisionVisible, setIsVisionVisible] = useState(false);
   const [hasSpeakingVideoPlayed, setHasSpeakingVideoPlayed] = useState(false);
   const galleryWrapperRef = useRef<HTMLDivElement>(null);
   const [galleryHeight, setGalleryHeight] = useState(0);
+
+  useEffect(() => {
+    const lenis = new Lenis();
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+        lenis.destroy();
+    }
+  }, []);
 
   const handleSpeakingEnd = () => {
     setIsVisionVisible(true);
@@ -68,6 +87,7 @@ export default function HomeClient() {
         </div>
       )}
       {isVisionVisible && <Place />}
+      {isVisionVisible && <Location />}
       {isVisionVisible && <Target />}
     </main>
   );
