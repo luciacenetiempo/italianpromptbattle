@@ -1,5 +1,8 @@
 .flapChar {
   display: inline-block;
+  /* Ottimizzazioni per dispositivi mobile */
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Forza l'accelerazione hardware */
 }
 
 .final {
@@ -12,6 +15,8 @@
 
 .glitch {
   animation: glitch-anim 0.2s infinite;
+  /* Ottimizzazioni per dispositivi mobile */
+  will-change: transform, opacity;
 }
 
 @keyframes glitch-anim {
@@ -19,5 +24,19 @@
   25% { transform: translate(-2px, 2px); opacity: 0.8; }
   50% { transform: translate(2px, -2px); opacity: 1; }
   75% { transform: translate(-1px, 1px); opacity: 0.9; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+/* Ottimizzazioni specifiche per dispositivi mobile */
+@media (max-width: 768px) {
+  .glitch {
+    /* Riduci la complessità dell'animazione su mobile */
+    animation: glitch-anim-mobile 0.15s infinite;
+  }
+}
+
+@keyframes glitch-anim-mobile {
+  0% { transform: translate(0, 0); opacity: 1; }
+  50% { transform: translate(-1px, 1px); opacity: 0.9; }
   100% { transform: translate(0, 0); opacity: 1; }
 } 

@@ -4,6 +4,8 @@
   overflow: hidden;
   background-color: #000;
   position: relative;
+  touch-action: pan-y pinch-zoom;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scrollingContainer {
@@ -14,6 +16,7 @@
   left: 0;
   will-change: transform;
   opacity: 0.6;
+  touch-action: pan-x;
 }
 
 .column {
@@ -36,12 +39,14 @@
 .imageWrapper {
   margin: 20px 0;
   position: relative;
+  touch-action: manipulation;
 }
 
 .image {
   width: 100%;
   height: auto;
   display: block;
+  pointer-events: none;
 }
 
 .promptBox {
@@ -57,11 +62,20 @@
   transition: opacity 0.5s ease-in-out, transform 0.3s ease;
   backdrop-filter: blur(5px);
   transform: translateY(100%);
+  pointer-events: none;
 }
 
 .imageWrapper:hover .promptBox {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Touch support for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .imageWrapper:active .promptBox {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Hide scrollbar for a cleaner look */

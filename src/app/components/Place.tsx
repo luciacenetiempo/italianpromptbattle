@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ctaStyles from './Cta.module.css';
+import { useDevice } from './DeviceContext';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -16,6 +17,10 @@ interface PlaceProps {
 const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
   const placeRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Utilizza il context per rilevare il dispositivo
+  const { isMobile, isMobileDetected } = useDevice();
+  const isMobileDevice = isMobile || isMobileDetected;
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -50,6 +55,7 @@ const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
         muted
         playsInline
         poster="/video/ipb-background-2.jpg"
+        key={isMobileDevice ? 'mobile' : 'desktop'}
       >
         <source src="/video/ipb-milano.webm" type="video/webm" />
         <source src="/video/ipb-milano.mp4" type="video/mp4" />

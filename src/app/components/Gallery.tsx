@@ -49,6 +49,7 @@ const Gallery = ({ style }: GalleryProps) => {
     const scrollState = useRef({ targetX: 0, currentX: 0, speed: 0.08 });
     const parallaxState = useRef(Array(NUM_COLUMNS).fill(0).map(() => ({ targetY: 0, currentY: 0 })));
     const isActive = useRef(false);
+    const touchState = useRef({ startX: 0, startY: 0, currentX: 0, isDragging: false });
     
     const columns = useMemo(() => {
         const newColumns: ImageType[][] = Array(NUM_COLUMNS).fill(null).map(() => []);
@@ -150,6 +151,70 @@ const Gallery = ({ style }: GalleryProps) => {
             }
         };
 
+        // Touch event handlers for mobile
+        const handleTouchStart = (e: TouchEvent) => {
+            if (!isActive.current) return;
+            
+            const touch = e.touches[0];
+            touchState.current.startX = touch.clientX;
+            touchState.current.startY = touch.clientY;
+            touchState.current.currentX = touch.clientX;
+            touchState.current.isDragging = false;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!isActive.current || !touchState.current.isDragging) return;
+
+            const gallery = galleryRef.current;
+            const container = containerRef.current;
+            if (!gallery || !container) return;
+
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - touchState.current.currentX;
+            touchState.current.currentX = touch.clientX;
+
+            const scrollWidth = container.scrollWidth;
+            const clientWidth = gallery.clientWidth;
+            const minScroll = -(scrollWidth - clientWidth);
+            const maxScroll = 0;
+
+            const tolerance = 2;
+            const atStart = scrollState.current.currentX >= maxScroll - tolerance;
+            const atEnd = scrollState.current.currentX <= minScroll + tolerance;
+
+            if (deltaX > 0 && atStart) return;
+            if (deltaX < 0 && atEnd) return;
+
+            e.preventDefault();
+
+            const newTargetX = scrollState.current.targetX - deltaX * 2;
+            scrollState.current.targetX = Math.max(minScroll, Math.min(maxScroll, newTargetX));
+            
+            const columnElements = containerRef.current?.children;
+            if (!columnElements) return;
+
+            for (let i = 0; i < columnElements.length; i++) {
+                const state = parallaxState.current[i];
+                if(state){
+                    const speed = (i % NUM_COLUMNS) * 0.1 - 0.2;
+                    state.targetY += deltaX * speed * 0.5;
+                }
+            }
+        };
+
+        const handleTouchEnd = (e: TouchEvent) => {
+            if (!isActive.current) return;
+            
+            const touch = e.changedTouches[0];
+            const deltaX = Math.abs(touch.clientX - touchState.current.startX);
+            const deltaY = Math.abs(touch.clientY - touchState.current.startY);
+            
+            // If horizontal movement is greater than vertical, it's a swipe
+            if (deltaX > deltaY && deltaX > 10) {
+                touchState.current.isDragging = true;
+            }
+        };
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 isActive.current = entry.isIntersecting;
@@ -163,10 +228,17 @@ const Gallery = ({ style }: GalleryProps) => {
         }
 
         window.addEventListener('wheel', handleWheel, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
+        
         const animFrame = requestAnimationFrame(runAnimation);
 
         return () => {
             window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
             if (currentGallery) {
                 observer.unobserve(currentGallery);
             }

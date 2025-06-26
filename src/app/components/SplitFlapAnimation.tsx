@@ -30,15 +30,32 @@ const SplitFlapAnimation: React.FC<SplitFlapAnimationProps> = ({
   const animatedIndicesRef = useRef<Set<number>>(new Set());
   const hasCompletedRef = useRef(false);
   const [glitchingIndices, setGlitchingIndices] = useState<Set<number>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Rileva se siamo su mobile per ottimizzare le performance
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+      setIsMobile(window.innerWidth <= 768 || isMobileDevice);
+    };
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   // Effetto Glitch
   useEffect(() => {
     const glitchInterval = setInterval(() => {
       if (typeof visibleCount !== 'number' || visibleCount === 0) return;
 
-      if (Math.random() > 0.7) { // 30% di probabilità
+      // Riduci la frequenza del glitch su mobile per migliorare le performance
+      const glitchProbability = isMobile ? 0.3 : 0.7; // 30% su mobile, 70% su desktop
+      
+      if (Math.random() > glitchProbability) {
         const newGlitching = new Set<number>();
-        const glitchCount = Math.floor(Math.random() * 3) + 1; // Glitcha da 1 a 3 lettere
+        // Riduci il numero di lettere che glitchano su mobile
+        const maxGlitchCount = isMobile ? 2 : 3;
+        const glitchCount = Math.floor(Math.random() * maxGlitchCount) + 1;
         
         for (let i = 0; i < glitchCount; i++) {
           const randomIndex = Math.floor(Math.random() * visibleCount);
@@ -47,14 +64,16 @@ const SplitFlapAnimation: React.FC<SplitFlapAnimationProps> = ({
         
         setGlitchingIndices(newGlitching);
 
+        // Riduci la durata del glitch su mobile
+        const glitchDuration = isMobile ? Math.random() * 100 + 50 : Math.random() * 200 + 100;
         setTimeout(() => {
           setGlitchingIndices(new Set());
-        }, Math.random() * 200 + 100);
+        }, glitchDuration);
       }
-    }, 800);
+    }, isMobile ? 1200 : 800); // Intervallo più lungo su mobile
 
     return () => clearInterval(glitchInterval);
-  }, [visibleCount]);
+  }, [visibleCount, isMobile]);
 
   useEffect(() => {
     if (typeof visibleCount !== 'number' || visibleCount < 0) return;
@@ -77,15 +96,24 @@ const SplitFlapAnimation: React.FC<SplitFlapAnimationProps> = ({
       const flap = () => {
         const randomChar = FLAP_CHARS[Math.floor(Math.random() * FLAP_CHARS.length)];
         span.textContent = randomChar;
-        if (frame > 5 + Math.random() * 5) {
+        
+        // Riduci il numero di frame su mobile per migliorare le performance
+        const maxFrames = isMobile ? 3 : 5;
+        const additionalFrames = isMobile ? Math.random() * 3 : Math.random() * 5;
+        
+        if (frame > maxFrames + additionalFrames) {
           span.textContent = originalChar;
           span.classList.add(styles.final);
           return;
         }
         frame++;
-        setTimeout(flap, 60);
+        // Riduci l'intervallo tra i frame su mobile
+        const frameInterval = isMobile ? 80 : 60;
+        setTimeout(flap, frameInterval);
       };
-      setTimeout(flap, Math.random() * 200);
+      // Riduci il delay iniziale su mobile
+      const initialDelay = isMobile ? Math.random() * 100 : Math.random() * 200;
+      setTimeout(flap, initialDelay);
     }
 
     // Nascondi le lettere che non sono più visibili (scroll indietro)
@@ -113,7 +141,7 @@ const SplitFlapAnimation: React.FC<SplitFlapAnimationProps> = ({
     } else if (typeof visibleCount === 'number' && visibleCount < spans.length) {
       hasCompletedRef.current = false;
     }
-  }, [visibleCount, text, onAnimationComplete]);
+  }, [visibleCount, text, onAnimationComplete, isMobile]);
 
   return (
     <h1 ref={containerRef} className={className}>
