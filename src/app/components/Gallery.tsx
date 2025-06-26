@@ -6,6 +6,7 @@ import styles from './Gallery.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useDevice } from './DeviceContext';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -50,6 +51,12 @@ const Gallery = ({ style }: GalleryProps) => {
     const parallaxState = useRef(Array(NUM_COLUMNS).fill(0).map(() => ({ targetY: 0, currentY: 0 })));
     const isActive = useRef(false);
     const touchState = useRef({ startX: 0, startY: 0, currentX: 0, isDragging: false });
+    const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const hasTriggeredFallback = useRef(false);
+    
+    // Utilizza il context per rilevare il dispositivo
+    const { isMobile: contextIsMobile, isMobileDetected } = useDevice();
+    const isMobileDevice = contextIsMobile || isMobileDetected;
     
     const columns = useMemo(() => {
         const newColumns: ImageType[][] = Array(NUM_COLUMNS).fill(null).map(() => []);
@@ -62,6 +69,26 @@ const Gallery = ({ style }: GalleryProps) => {
         });
         
         return newColumns;
+    }, []);
+
+    // Fallback per smartphone problematici
+    const triggerFallback = useCallback(() => {
+        if (hasTriggeredFallback.current) return;
+        
+        console.log('[Gallery] Fallback attivato: sblocco sezione per smartphone problematici');
+        hasTriggeredFallback.current = true;
+        
+        // Forza lo scroll verso il basso per sbloccare la sezione
+        const galleryElement = galleryRef.current;
+        if (galleryElement) {
+            const rect = galleryElement.getBoundingClientRect();
+            const targetScrollY = window.scrollY + rect.bottom + 100; // 100px sotto la gallery
+            
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+            });
+        }
     }, []);
 
     useGSAP(() => {
@@ -218,8 +245,15 @@ const Gallery = ({ style }: GalleryProps) => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 isActive.current = entry.isIntersecting;
+                
+                // Se è mobile e la gallery è visibile, attiva il fallback dopo 2 secondi
+                if (isMobileDevice && entry.isIntersecting && !hasTriggeredFallback.current) {
+                    fallbackTimeoutRef.current = setTimeout(() => {
+                        triggerFallback();
+                    }, 1000);
+                }
             },
-            { threshold: 1.0 }
+            { threshold: 0.5 } // Ridotto da 1.0 a 0.5 per essere meno restrittivo
         );
         
         const currentGallery = galleryRef.current;
@@ -243,8 +277,14 @@ const Gallery = ({ style }: GalleryProps) => {
                 observer.unobserve(currentGallery);
             }
             cancelAnimationFrame(animFrame);
+            
+            // Pulisci il timeout del fallback
+            if (fallbackTimeoutRef.current) {
+                clearTimeout(fallbackTimeoutRef.current);
+                fallbackTimeoutRef.current = null;
+            }
         };
-    }, [runAnimation]);
+    }, [runAnimation, isMobileDevice, triggerFallback]);
 
     return (
         <section className={styles.gallery} ref={galleryRef} style={style}>
