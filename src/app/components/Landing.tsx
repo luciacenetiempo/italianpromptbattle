@@ -31,22 +31,22 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
   const { isMobile, isMobileDetected, audioEnabled } = useDevice();
   const isMobileDevice = isMobile || isMobileDetected;
 
+  // Ref per l'animazione fluida
+  const targetTimeRef = useRef(0);
+  const animationFrameRef = useRef<number>();
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const logVideoSource = () => {
-      if (video) {
-        console.log(`[Landing] Video caricato: ${video.currentSrc}`);
-      }
-    };
-    video.addEventListener('canplay', logVideoSource);
-
-    let targetTime = 0;
-    let easedTime = 0;
-    const easingFactor = 0.1; // Ridotto per un'animazione più morbida e fluida
+    let lastScrollTime = 0;
+    const scrollThrottle = 16; // ~60fps
 
     const handleScroll = () => {
+      const now = Date.now();
+      if (now - lastScrollTime < scrollThrottle) return;
+      lastScrollTime = now;
+
       const el = scrollContainerRef.current;
       if (!el) return;
       
@@ -56,37 +56,38 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
       const scrollTop = window.scrollY;
       const currentScrollFraction = Math.min(1, scrollTop / scrollableHeight);
       
+      // Aggiorna immediatamente durante lo scroll per fluidità
       setScrollFraction(currentScrollFraction);
 
-      // Debug log
-      console.log('[Landing] Scroll:', {
-        scrollTop,
-        scrollableHeight,
-        currentScrollFraction,
-        showIntro: currentScrollFraction >= 0.95
-      });
+      // Debug log ridotto
+      if (currentScrollFraction % 0.1 < 0.01) {
+        console.log('[Landing] Scroll:', {
+          scrollTop,
+          scrollableHeight,
+          currentScrollFraction,
+          showIntro: currentScrollFraction >= 0.95
+        });
+      }
 
       // Ottimizzazione: aggiorna lo stato solo se il valore cambia
       const newScrolled = scrollTop > 10;
       setScrolled(prev => (prev !== newScrolled ? newScrolled : prev));
 
       // Riduci il threshold per mostrare l'intro più facilmente
-      const introThreshold = 0.95; // Ridotto da 1 a 0.95
+      const introThreshold = 0.95;
       const newShowIntro = currentScrollFraction >= introThreshold;
       setShowIntro(prev => (prev !== newShowIntro ? newShowIntro : prev));
 
       if (isFinite(video.duration)) {
-        targetTime = video.duration * currentScrollFraction;
+        targetTimeRef.current = video.duration * currentScrollFraction;
       }
     };
 
-    let animationFrameId: number;
     const smoothAnimate = () => {
-      easedTime += (targetTime - easedTime) * easingFactor;
-      if (video.readyState > 1 && Math.abs(video.currentTime - easedTime) > 0.01) {
-        video.currentTime = easedTime;
+      if (video.readyState > 1 && Math.abs(video.currentTime - targetTimeRef.current) > 0.02) {
+        video.currentTime = targetTimeRef.current;
       }
-      animationFrameId = requestAnimationFrame(smoothAnimate);
+      animationFrameRef.current = requestAnimationFrame(smoothAnimate);
     };
 
     const onMetadataLoaded = () => {
@@ -112,11 +113,8 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
     return () => {
       window.removeEventListener('scroll', handleScroll);
       video.removeEventListener('loadedmetadata', onMetadataLoaded);
-      if (video) {
-        video.removeEventListener('canplay', logVideoSource);
-      }
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [isMobileDevice]);
@@ -263,8 +261,8 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
         <div ref={scrollContainerRef} className={styles.scrollContainer}>
           <div className={styles.stickyContainer}>
             <video
-              key={isMobileDevice ? 'mobile' : 'desktop'}
               ref={videoRef}
+              key={isMobileDevice ? 'mobile' : 'desktop'}
               className={styles.videoBackground}
               muted
               playsInline

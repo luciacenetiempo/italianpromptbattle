@@ -11,6 +11,9 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden; /* Nasconde il contenuto che potrebbe sbordare */
+  will-change: transform; /* Ottimizza le performance dello sticky */
+  transform: translateZ(0); /* Forza l'accelerazione hardware */
+  -webkit-transform: translateZ(0);
 }
 
 .videoBackground {
@@ -22,6 +25,10 @@
   opacity: 0.8;
   pointer-events: none;
   transform: translateZ(0); /* Forza l'accelerazione hardware */
+  will-change: transform; /* Ottimizza le performance delle animazioni */
+  backface-visibility: hidden; /* Migliora le performance su mobile */
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
 }
 
 .particleCanvas {
@@ -37,7 +44,7 @@
   position: absolute;
   z-index: 10;
   left: 4vw;
-  bottom: 20vh;
+  bottom: 23vh;
   max-width: 90vw;
 }
 
