@@ -33,7 +33,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
 
   // Ref per l'animazione fluida
   const targetTimeRef = useRef(0);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(0);
 
   useEffect(() => {
     const video = videoRef.current;

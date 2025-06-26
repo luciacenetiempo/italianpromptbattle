@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import styles from './AppPreloader.module.css';
 import { DeviceContext } from './DeviceContext';
 
@@ -239,7 +240,7 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
           <div className={styles.loadingScreen}>
             <div className={styles.loadingContent}>
               <div className={styles.logo}>
-                <img src="/assets/img/ipb-sil.webp" alt="Italian Prompt Battle" />
+                <Image src="/assets/img/ipb-sil.webp" alt="Italian Prompt Battle" width={100} height={100} />
               </div>
               <div className={styles.progressBar}>
                 <div className={styles.progressFill} style={{ width: `${progress}%` }}></div>
