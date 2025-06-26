@@ -100,7 +100,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
       });
     };
 
-    if (video.readyState > 1) {
+    if (video.readyState > 0) {
       onMetadataLoaded();
     } else {
       video.addEventListener('loadedmetadata', onMetadataLoaded);
