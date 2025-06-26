@@ -39,84 +39,134 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
     const video = videoRef.current;
     if (!video) return;
 
-    let lastScrollTime = 0;
-    const scrollThrottle = 16; // ~60fps
-
-    const handleScroll = () => {
-      const now = Date.now();
-      if (now - lastScrollTime < scrollThrottle) return;
-      lastScrollTime = now;
-
-      const el = scrollContainerRef.current;
-      if (!el) return;
-      
-      const scrollableHeight = el.scrollHeight - window.innerHeight;
-      if (scrollableHeight <= 0) return;
-
-      const scrollTop = window.scrollY;
-      const currentScrollFraction = Math.min(1, scrollTop / scrollableHeight);
-      
-      // Aggiorna immediatamente durante lo scroll per fluidità
-      setScrollFraction(currentScrollFraction);
-
-      // Debug log ridotto
-      if (currentScrollFraction % 0.1 < 0.01) {
-        console.log('[Landing] Scroll:', {
-          scrollTop,
-          scrollableHeight,
-          currentScrollFraction,
-          showIntro: currentScrollFraction >= 0.95
+    // Logica diversa per mobile e desktop
+    if (isMobileDevice) {
+      // MOBILE: Video in autoplay, scroll automatico alla fine
+      const onMetadataLoaded = () => {
+        console.log('[Landing Mobile] Video caricato, avvio autoplay');
+        video.play().catch(error => {
+          console.error("Video autoplay failed:", error);
         });
+      };
+
+      const onVideoEnded = () => {
+        console.log('[Landing Mobile] Video finito, scroll automatico');
+        // Scroll automatico fino alla fine per mostrare l'intro
+        const el = scrollContainerRef.current;
+        if (el) {
+          const scrollableHeight = el.scrollHeight - window.innerHeight;
+          window.scrollTo({
+            top: scrollableHeight,
+            behavior: 'smooth'
+          });
+        }
+        setShowIntro(true);
+        setScrollFraction(1); // Imposta scrollFraction a 1 quando il video finisce
+      };
+
+      const onTimeUpdate = () => {
+        // Aggiorna scrollFraction basandolo sul progresso del video
+        if (video.duration) {
+          const videoProgress = video.currentTime / video.duration;
+          setScrollFraction(videoProgress);
+        }
+      };
+
+      if (video.readyState > 0) {
+        onMetadataLoaded();
+      } else {
+        video.addEventListener('loadedmetadata', onMetadataLoaded);
       }
 
-      // Ottimizzazione: aggiorna lo stato solo se il valore cambia
-      const newScrolled = scrollTop > 10;
-      setScrolled(prev => (prev !== newScrolled ? newScrolled : prev));
+      video.addEventListener('ended', onVideoEnded);
+      video.addEventListener('timeupdate', onTimeUpdate);
 
-      // Riduci il threshold per mostrare l'intro più facilmente
-      const introThreshold = 0.95;
-      const newShowIntro = currentScrollFraction >= introThreshold;
-      setShowIntro(prev => (prev !== newShowIntro ? newShowIntro : prev));
-
-      if (isFinite(video.duration)) {
-        targetTimeRef.current = video.duration * currentScrollFraction;
-      }
-    };
-
-    const smoothAnimate = () => {
-      if (video.readyState > 1 && Math.abs(video.currentTime - targetTimeRef.current) > 0.02) {
-        video.currentTime = targetTimeRef.current;
-      }
-      animationFrameRef.current = requestAnimationFrame(smoothAnimate);
-    };
-
-    const onMetadataLoaded = () => {
-      video.play().then(() => {
-        video.pause();
-        handleScroll();
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        smoothAnimate();
-      }).catch(error => {
-        console.error("Video play failed, fallback to direct scroll handling:", error);
-        handleScroll();
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        smoothAnimate();
-      });
-    };
-
-    if (video.readyState > 0) {
-      onMetadataLoaded();
+      return () => {
+        video.removeEventListener('loadedmetadata', onMetadataLoaded);
+        video.removeEventListener('ended', onVideoEnded);
+        video.removeEventListener('timeupdate', onTimeUpdate);
+      };
     } else {
-      video.addEventListener('loadedmetadata', onMetadataLoaded);
-    }
+      // DESKTOP: Logica originale con scroll controllato
+      let lastScrollTime = 0;
+      const scrollThrottle = 16; // ~60fps
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      video.removeEventListener('loadedmetadata', onMetadataLoaded);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      const handleScroll = () => {
+        const now = Date.now();
+        if (now - lastScrollTime < scrollThrottle) return;
+        lastScrollTime = now;
+
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        
+        const scrollableHeight = el.scrollHeight - window.innerHeight;
+        if (scrollableHeight <= 0) return;
+
+        const scrollTop = window.scrollY;
+        const currentScrollFraction = Math.min(1, scrollTop / scrollableHeight);
+        
+        // Aggiorna immediatamente durante lo scroll per fluidità
+        setScrollFraction(currentScrollFraction);
+
+        // Debug log ridotto
+        if (currentScrollFraction % 0.1 < 0.01) {
+          console.log('[Landing Desktop] Scroll:', {
+            scrollTop,
+            scrollableHeight,
+            currentScrollFraction,
+            showIntro: currentScrollFraction >= 0.95
+          });
+        }
+
+        // Ottimizzazione: aggiorna lo stato solo se il valore cambia
+        const newScrolled = scrollTop > 10;
+        setScrolled(prev => (prev !== newScrolled ? newScrolled : prev));
+
+        // Riduci il threshold per mostrare l'intro più facilmente
+        const introThreshold = 0.95;
+        const newShowIntro = currentScrollFraction >= introThreshold;
+        setShowIntro(prev => (prev !== newShowIntro ? newShowIntro : prev));
+
+        if (isFinite(video.duration)) {
+          targetTimeRef.current = video.duration * currentScrollFraction;
+        }
+      };
+
+      const smoothAnimate = () => {
+        if (video.readyState > 1 && Math.abs(video.currentTime - targetTimeRef.current) > 0.02) {
+          video.currentTime = targetTimeRef.current;
+        }
+        animationFrameRef.current = requestAnimationFrame(smoothAnimate);
+      };
+
+      const onMetadataLoaded = () => {
+        video.play().then(() => {
+          video.pause();
+          handleScroll();
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          smoothAnimate();
+        }).catch(error => {
+          console.error("Video play failed, fallback to direct scroll handling:", error);
+          handleScroll();
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          smoothAnimate();
+        });
+      };
+
+      if (video.readyState > 0) {
+        onMetadataLoaded();
+      } else {
+        video.addEventListener('loadedmetadata', onMetadataLoaded);
       }
-    };
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        video.removeEventListener('loadedmetadata', onMetadataLoaded);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    }
   }, [isMobileDevice]);
 
   // Fallback temporale per l'animazione del testo
@@ -139,21 +189,21 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
     }
   }, [scrollFraction, textAnimationComplete]);
 
-  // Fallback per mostrare l'intro se l'utente non scrolla completamente
+  // Fallback per mostrare l'intro se l'utente non scrolla completamente (solo desktop)
   useEffect(() => {
-    if (!showIntro && scrollFraction > 0.5) {
+    if (!isMobileDevice && !showIntro && scrollFraction > 0.5) {
       // Se l'utente ha scrollato più del 50% ma non ha ancora raggiunto il threshold,
-      // mostra l'intro dopo 5 secondi
+      // mostra l'intro dopo 5 secondi (solo su desktop)
       const timeout = setTimeout(() => {
         if (!showIntro) {
-          console.log('[Landing] Fallback: mostrando intro automaticamente');
+          console.log('[Landing Desktop] Fallback: mostrando intro automaticamente');
           setShowIntro(true);
         }
       }, 5000);
 
       return () => clearTimeout(timeout);
     }
-  }, [showIntro, scrollFraction]);
+  }, [showIntro, scrollFraction, isMobileDevice]);
 
   // useEffect che gestisce la musica di sottofondo - rispetta la scelta dell'utente
   useEffect(() => {
