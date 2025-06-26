@@ -9,6 +9,10 @@
     padding: 0 5vw;
 }
 
+.left canvas{
+    width: 400px;
+    height: 400px;
+}
 .left {
     flex: 0 0 260px;
     display: flex;
@@ -47,6 +51,9 @@
     gap: 0.2em;
 }
 
+.secondLineWrapper a{
+    margin-right: 2rem;
+}
 .thirdLineWrapper {
     display: flex;
     align-items: center;
@@ -70,6 +77,10 @@
 }
 
 @media (max-width: 900px) {
+    .left canvas{
+        width: 250px;
+        height: 250px;
+    }
     .locationSection {
         flex-direction: column;
         min-height: 100vh;

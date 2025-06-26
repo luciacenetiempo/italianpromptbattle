@@ -86,9 +86,9 @@ export default function HomeClient() {
           </div>
         </div>
       )}
+      {isVisionVisible && <Target />}
       {isVisionVisible && <Place />}
       {isVisionVisible && <Location />}
-      {isVisionVisible && <Target />}
     </main>
   );
 } 
