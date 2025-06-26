@@ -41,18 +41,23 @@ const originalImages: ImageType[] = [
 
 const NUM_COLUMNS = 5;
 
-const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * t;
-
 const Gallery = ({ style }: GalleryProps) => {
     const galleryRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const quoteRef = useRef<HTMLDivElement>(null);
-    const scrollState = useRef({ targetX: 0, currentX: 0, speed: 0.08 });
+    const scrollState = useRef({
+        currentX: 0,
+        targetX: 0,
+        speed: 0.1
+    });
     const parallaxState = useRef(Array(NUM_COLUMNS).fill(0).map(() => ({ targetY: 0, currentY: 0 })));
     const isActive = useRef(false);
-    const touchState = useRef({ startX: 0, startY: 0, currentX: 0, isDragging: false });
-    const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const hasTriggeredFallback = useRef(false);
+    const touchState = useRef({
+        startX: 0,
+        startY: 0,
+        currentX: 0,
+        isDragging: false
+    });
     
     // Utilizza il context per rilevare il dispositivo
     const { isMobile: contextIsMobile, isMobileDetected } = useDevice();
@@ -71,27 +76,13 @@ const Gallery = ({ style }: GalleryProps) => {
         return newColumns;
     }, []);
 
-    // Fallback per smartphone problematici
-    const triggerFallback = useCallback(() => {
-        if (hasTriggeredFallback.current) return;
-        
-        console.log('[Gallery] Fallback attivato: sblocco sezione per smartphone problematici');
-        hasTriggeredFallback.current = true;
-        
-        // Forza lo scroll verso il basso per sbloccare la sezione
-        const galleryElement = galleryRef.current;
-        if (galleryElement) {
-            const rect = galleryElement.getBoundingClientRect();
-            const targetScrollY = window.scrollY + rect.bottom + 100; // 100px sotto la gallery
-            
-            window.scrollTo({
-                top: targetScrollY,
-                behavior: 'smooth'
-            });
-        }
-    }, []);
-
     useGSAP(() => {
+        // Su mobile, non attivare l'animazione GSAP
+        if (isMobileDevice) {
+            console.log('[Gallery] Modalità mobile: animazione GSAP disabilitata');
+            return;
+        }
+
         const wrappers = gsap.utils.toArray<HTMLElement>(`.${styles.imageWrapper}`);
         wrappers.forEach((wrapper) => {
             gsap.from(wrapper, {
@@ -121,27 +112,42 @@ const Gallery = ({ style }: GalleryProps) => {
             filter: 'blur(10px)',
             ease: 'power3.out'
         });
-    }, { scope: galleryRef });
+    }, { dependencies: [isMobileDevice] });
 
     const runAnimation = useCallback(() => {
-        if (!containerRef.current || !galleryRef.current) return;
-        
-        scrollState.current.currentX = lerp(scrollState.current.currentX, scrollState.current.targetX, scrollState.current.speed);
-        containerRef.current.style.transform = `translateX(${scrollState.current.currentX}px)`;
+        // Su mobile, non eseguire l'animazione
+        if (isMobileDevice) {
+            return;
+        }
 
-        const columnElements = containerRef.current.children;
-        for (let i = 0; i < columnElements.length; i++) {
-            const state = parallaxState.current[i];
-            if(state){
-                state.currentY = lerp(state.currentY, state.targetY, 0.05);
-                (columnElements[i] as HTMLDivElement).style.transform = `translateY(${state.currentY}px)`;
+        const container = containerRef.current;
+        if (!container) return;
+
+        const columns = Array.from(container.children) as HTMLElement[];
+        columns.forEach((column, index) => {
+            const state = parallaxState.current[index];
+            if (state) {
+                state.currentY += (state.targetY - state.currentY) * 0.1;
+                gsap.set(column, { y: state.currentY });
             }
+        });
+
+        const gallery = galleryRef.current;
+        if (gallery) {
+            scrollState.current.currentX += (scrollState.current.targetX - scrollState.current.currentX) * 0.1;
+            gsap.set(gallery, { x: scrollState.current.currentX });
         }
 
         requestAnimationFrame(runAnimation);
-    }, []);
+    }, [isMobileDevice]);
 
     useEffect(() => {
+        // Su mobile, non attivare nulla - scroll completamente normale
+        if (isMobileDevice) {
+            console.log('[Gallery] Modalità mobile: tutte le animazioni disabilitate, scroll normale');
+            return;
+        }
+
         const handleWheel = (e: WheelEvent) => {
             if (!isActive.current) return;
 
@@ -158,8 +164,8 @@ const Gallery = ({ style }: GalleryProps) => {
             const atStart = scrollState.current.currentX >= maxScroll - tolerance;
             const atEnd = scrollState.current.currentX <= minScroll + tolerance;
 
-            if (e.deltaY < 0 && atStart) return;
-            if (e.deltaY > 0 && atEnd) return;
+            if (e.deltaY < 0 && atEnd) return;
+            if (e.deltaY > 0 && atStart) return;
 
             e.preventDefault();
 
@@ -245,15 +251,8 @@ const Gallery = ({ style }: GalleryProps) => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 isActive.current = entry.isIntersecting;
-                
-                // Se è mobile e la gallery è visibile, attiva il fallback dopo 2 secondi
-                if (isMobileDevice && entry.isIntersecting && !hasTriggeredFallback.current) {
-                    fallbackTimeoutRef.current = setTimeout(() => {
-                        triggerFallback();
-                    }, 1000);
-                }
             },
-            { threshold: 0.5 } // Ridotto da 1.0 a 0.5 per essere meno restrittivo
+            { threshold: 0.5 }
         );
         
         const currentGallery = galleryRef.current;
@@ -277,29 +276,27 @@ const Gallery = ({ style }: GalleryProps) => {
                 observer.unobserve(currentGallery);
             }
             cancelAnimationFrame(animFrame);
-            
-            // Pulisci il timeout del fallback
-            if (fallbackTimeoutRef.current) {
-                clearTimeout(fallbackTimeoutRef.current);
-                fallbackTimeoutRef.current = null;
-            }
         };
-    }, [runAnimation, isMobileDevice, triggerFallback]);
+    }, [runAnimation, isMobileDevice]);
 
     return (
-        <section className={styles.gallery} ref={galleryRef} style={style}>
-            <div className={styles.scrollingContainer} ref={containerRef} data-gallery-container>
-                {columns.map((column, colIndex) => (
-                    <div key={colIndex} className={styles.column}>
-                        {column.map((image, imgIndex) => (
-                            <div key={`${colIndex}-${imgIndex}`} className={styles.imageWrapper}>
+        <section 
+            ref={galleryRef} 
+            className={`${styles.gallery} ${isMobileDevice ? styles.mobileGallery : ''}`} 
+            style={style}
+        >
+            <div ref={containerRef} className={styles.scrollingContainer}>
+                {columns.map((column, columnIndex) => (
+                    <div key={columnIndex} className={styles.column}>
+                        {column.map((image, imageIndex) => (
+                            <div key={imageIndex} className={styles.imageWrapper}>
                                 <Image
                                     src={image.src}
                                     alt={image.prompt}
                                     width={400}
                                     height={image.height}
                                     className={styles.image}
-                                    priority={colIndex < NUM_COLUMNS}
+                                    priority={columnIndex < NUM_COLUMNS}
                                 />
                                 <div className={styles.promptBox}>
                                     <p>{image.prompt}</p>
@@ -309,7 +306,7 @@ const Gallery = ({ style }: GalleryProps) => {
                     </div>
                 ))}
             </div>
-            <div className={styles.quote} ref={quoteRef}>
+            <div ref={quoteRef} className={styles.quote}>
                 <h2>Ogni immagine è il frutto di una scelta.<br/>
                 Ogni scelta è il riflesso della tua immaginazione.</h2>
             </div>

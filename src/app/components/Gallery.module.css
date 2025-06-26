@@ -113,3 +113,22 @@
     font-size: 2rem;
   }
 }
+
+/* Su mobile, permettere scroll normale */
+@media (max-width: 768px) {
+  .gallery {
+    touch-action: pan-y;
+  }
+  
+  .scrollingContainer {
+    touch-action: pan-y;
+  }
+}
+
+.mobileGallery {
+  touch-action: pan-y !important;
+}
+
+.mobileGallery .scrollingContainer {
+  touch-action: pan-y !important;
+}
