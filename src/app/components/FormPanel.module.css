@@ -1,0 +1,172 @@
+.panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.panel.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+.content {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  
+  /* Imposto lo stato iniziale del pannello */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  width: 100%;
+  max-width: 94vw;
+  height: 60vh;
+
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+  transform: translateX(-50%) translateY(100%);
+  /* Rimuovo le proprietà animate dalla transizione CSS per darle a GSAP */
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  overflow: hidden;
+  
+  padding: 60px 80px;
+  color: #1a1a1a;
+  background-color: #ffffff;
+}
+
+.panel.open .content {
+  transform: translateX(-50%) translateY(0);
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 2.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.panel h2 {
+    font-size: clamp(2.5rem, 4vw, 5rem);
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 50px;
+    color: #000;
+}
+.header{
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+}
+.col35{
+  width: 34%;
+}
+.col75{
+  width: 74%;
+}
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+    max-width: 100%;
+}
+.inputGroupRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  max-width: 100%;
+}
+.inputGroupCol{
+  width: 45%;
+  display: flex;
+  flex-flow: column;
+}
+
+.formInput {
+  color: #333;
+  box-sizing: border-box;
+  background-color: #0000;
+  border-bottom: 2px solid #000000;
+  /* border-radius: 100px; */
+  width: 100%;
+  padding: 22px 30px;
+  font-size: 1.7rem;
+}
+
+.formInput::placeholder {
+    color: #000000;
+    opacity: 1;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: #000000;
+    border-bottom: 2px solid #dc6f5a;
+}
+
+.helperText {
+    font-size: 1rem;
+    color: #000000;
+    padding-left: 30px;
+    margin-top: 10px;
+} 
+.buttonWrapper{
+  margin-top: 6vh;
+}
+
+@media (max-width: 900px) {
+  .content {
+    padding: 4vh;
+  }
+  .panel h2{
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+  .col35 canvas{
+    width: 100px!important;
+    height: 100px!important;
+  }
+  .inputGroup,.inputGroupRow{
+    margin-bottom: 15px
+  }  
+  .inputGroupRow{
+    flex-flow: column;
+  }
+  .inputGroupCol{
+    width: 100%;
+  }
+  .formInput {
+    padding: 1vh 2vh;
+    font-size: 1.1rem;
+    margin-top: 2vh;
+  }
+  .helperText {
+    margin-top: 4px;
+    padding-left: 2vh;
+    font-size: 0.8rem;
+  }
+  .buttonWrapper{
+    margin-top: 6vh;
+  }
+}

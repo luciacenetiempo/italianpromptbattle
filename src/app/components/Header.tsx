@@ -2,12 +2,15 @@ import React from 'react';
 import styles from './Header.module.css';
 import CanvasHeartCube from './CanvasHeartCube';
 
+type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
+
 interface HeaderProps {
   className?: string;
   style?: React.CSSProperties;
+  onOpenPanel?: (formType: FormType) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ className, style }) => {
+const Header: React.FC<HeaderProps> = ({ className, style, onOpenPanel }) => {
   return (
     <div className={`${styles.header} ${className || ''}`} style={style}>
       {/* Logo */}
@@ -168,7 +171,10 @@ const Header: React.FC<HeaderProps> = ({ className, style }) => {
       </div>
       {/* CTA */}
       <div className={styles.ctaContainer}>
-        <button className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}>
+        <button 
+          className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}
+          onClick={() => onOpenPanel?.('attendee')}
+        >
           ENTRA IN<br/>WAIT LIST
         </button>
       </div>

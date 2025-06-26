@@ -11,9 +11,10 @@ import Head from 'next/head';
 interface LandingProps {
   onSpeakingEnd: () => void;
   hasSpeakingVideoPlayed: boolean;
+  onOpenPanel?: (formType: 'registration' | 'sponsorship' | 'newsletter' | 'attendee') => void;
 }
 
-const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed }) => {
+const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, onOpenPanel }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const songAudioRef = useRef<HTMLAudioElement>(null);
   const [scrollFraction, setScrollFraction] = useState(0);
@@ -251,6 +252,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
                 pointerEvents: maxHeaderProgress > 0.98 ? 'auto' : 'none',
                 transition: 'opacity 0.2s linear, transform 0.2s linear',
               }}
+              onOpenPanel={onOpenPanel}
             />
             {!preloader && (
               <div className={`${styles.scrollIcon} ${scrolled ? styles.hidden : ''}`}>

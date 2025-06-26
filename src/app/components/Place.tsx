@@ -7,7 +7,13 @@ import ctaStyles from './Cta.module.css';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const Place: React.FC = () => {
+type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
+
+interface PlaceProps {
+  onOpenPanel?: (formType: FormType) => void;
+}
+
+const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
   const placeRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +66,10 @@ const Place: React.FC = () => {
             Vuoi esserci tra i primi a saperlo?
             </p>
           </div>
-          <button className={ctaStyles.ctaEmail}>
+          <button 
+            className={ctaStyles.ctaEmail}
+            onClick={() => onOpenPanel?.('sponsorship')}
+          >
             <span>↗ SEGNALA UNO SPAZIO PERFETTO</span>
             <span className={ctaStyles.ctaArrow}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

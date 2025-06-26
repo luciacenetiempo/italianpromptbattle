@@ -8,6 +8,12 @@ import ctaStyles from './Cta.module.css';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
+type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
+
+interface TargetProps {
+  onOpenPanel?: (formType: FormType) => void;
+}
+
 const MARQUEE_TEXT = [
   'Visual Artist',
   'Prompt Designer',
@@ -40,7 +46,7 @@ const MarqueeRow = () => (
   </div>
 );
 
-const Target: React.FC = () => {
+const Target: React.FC<TargetProps> = ({ onOpenPanel }) => {
   const targetRef = useRef<HTMLElement>(null);
   const silhouetteRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -95,7 +101,10 @@ const Target: React.FC = () => {
           <div className={styles.rightText}>
           La creatività<br/>non ha un ruolo...<br/>Ha coraggio!
           </div>
-          <button className={ctaStyles.ctaEmail}>
+          <button 
+            className={ctaStyles.ctaEmail}
+            onClick={() => onOpenPanel?.('attendee')}
+          >
             <span>↗ waiting list</span>
             <span className={ctaStyles.ctaArrow}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

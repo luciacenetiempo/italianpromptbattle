@@ -30,3 +30,13 @@ body {
 strong{
   font-weight: 800;
 }
+
+main.panel-open > * {
+  /* Rimuovo la vecchia regola */
+}
+
+.content-blurred {
+  filter: blur(8px);
+  transition: filter 0.4s ease-in-out;
+  pointer-events: none;
+}

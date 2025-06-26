@@ -10,7 +10,13 @@ import CanvasHeartCube from './CanvasHeartCube';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const Location: React.FC = () => {
+type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
+
+interface LocationProps {
+  onOpenPanel?: (formType: FormType) => void;
+}
+
+const Location: React.FC<LocationProps> = ({ onOpenPanel }) => {
     const locationRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +53,10 @@ const Location: React.FC = () => {
         <div className={styles.textBlock} ref={contentRef}>
           <span className={styles.firstLine}>hai una location?</span>
           <div className={styles.secondLineWrapper}>
-            <a href="#" className={ctaStyles.ctaEmail}>
+            <button 
+              className={ctaStyles.ctaEmail}
+              onClick={() => onOpenPanel?.('sponsorship')}
+            >
               <span>Scrivici!</span>
               <span className={ctaStyles.ctaArrow}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +64,7 @@ const Location: React.FC = () => {
                   <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
-            </a>
+            </button>
             <span className={styles.secondLineText}>ospita la prima</span>
           </div>
           <div className={styles.thirdLineWrapper}>
