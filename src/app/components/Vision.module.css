@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Spinge il marquee in basso */
-  height: 100vh;
+  height: 150vh;
   position: sticky; /* Lo rende "ancorabile" */
   top: 0; /* Si ancora alla parte superiore della viewport */
   overflow: hidden; /* Nasconde il testo che scorre fuori */

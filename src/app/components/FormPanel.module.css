@@ -23,6 +23,20 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
   cursor: pointer;
+  pointer-events: none;
+}
+
+/* Abilita i pointer-events per l'overlay solo quando il pannello è aperto */
+.panel.open .overlay {
+  pointer-events: auto;
+}
+
+/* Assicura che i form e i loro elementi abbiano pointer-events corretti */
+.content form,
+.content input,
+.content textarea,
+.content button:not(.closeButton) {
+  pointer-events: auto;
 }
 
 .content {
@@ -47,6 +61,7 @@
   padding: 60px 80px;
   color: #1a1a1a;
   background-color: #ffffff;
+  pointer-events: auto;
 }
 
 /* Stili specifici per mobile */
@@ -179,6 +194,45 @@
     padding-left: 30px;
     margin-top: 10px;
 } 
+
+/* Animazioni per lo stato di success */
+.inputGroup,
+.buttonWrapper {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.inputGroup.hidden,
+.buttonWrapper.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.header {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.header.success {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.successMessage {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+  text-align: center;
+  font-size: clamp(2rem, 3vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 50px;
+}
+
+.successMessage.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .buttonWrapper{
   margin-top: 6vh;
 }

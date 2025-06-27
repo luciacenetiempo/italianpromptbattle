@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from './InputField';
 import FormButton from './FormButton';
 import CanvasHeartCube from './CanvasHeartCube';
@@ -15,20 +15,52 @@ interface FormSponsorshipProps {
 const FormSponsorship: React.FC<FormSponsorshipProps> = ({
   listId = '1622397',
   submit = 'Entra a far parte della storia!',
-  success = '',
+  success = 'Perfetto! La tua richiesta di partnership è stata inviata. Ti contatteremo presto! 🚀',
   error = "Qualcosa è andato storto. Controlla l'indirizzo email."
 }) => {
   const [isSuccess, setSuccess] = useState(false);
   const [isError, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  // Controlla se l'utente è già iscritto al caricamento del componente
+  useEffect(() => {
+    const savedStatus = localStorage.getItem('formSponsorshipSuccess');
+    const savedName = localStorage.getItem('formSponsorshipName');
+    if (savedStatus === 'true') {
+      setIsAlreadySubscribed(true);
+      setSuccess(true);
+      setShowSuccessMessage(true);
+      if (savedName) {
+        setUserName(savedName);
+      }
+    }
+  }, []);
+
+  // Gestisce l'animazione del messaggio di success
+  useEffect(() => {
+    if (isSuccess && !isAlreadySubscribed) {
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(true);
+      }, 500); // Aspetta che gli elementi scompaiano prima di mostrare il messaggio
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, isAlreadySubscribed]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setSuccess(false);
     setError(false);
+    setShowSuccessMessage(false);
     
     const formData = new FormData(event.target as HTMLFormElement);
+    const name = formData.get('fields[name]') as string;
+    setUserName(name);
+    
     const url = `https://assets.mailerlite.com/jsonp/${listId}/forms/158278653864576953/subscribe`;
     
     try {
@@ -66,6 +98,9 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
 
         setSuccess(true);
         setError(false);
+        // Salva lo stato di success e il nome nel localStorage
+        localStorage.setItem('formSponsorshipSuccess', 'true');
+        localStorage.setItem('formSponsorshipName', name);
       } else {
         setSuccess(false);
         setError(true);
@@ -78,9 +113,20 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
     }
   }
 
+  // Messaggi personalizzati con il nome
+  const getPersonalizedSuccessMessage = () => {
+    if (!userName) return success;
+    return `Perfetto ${userName}!<br/>La tua richiesta di partnership è stata inviata.<br/>Ti contatteremo presto!`;
+  };
+
+  const getPersonalizedAlreadySubscribedMessage = () => {
+    if (!userName) return "La tua richiesta di partnership è già stata inviata!<br/>Ti contatteremo presto per aggiornamenti.";
+    return `Ciao ${userName}!<br/>La tua richiesta di partnership è già stata inviata!<br/>Ti contatteremo presto per aggiornamenti.`;
+  };
+
   return (
     <form onSubmit={onSubmit}>
-      <div className={styles.header}>
+      <div className={`${styles.header} ${isSuccess ? styles.success : ''}`}>
         <div className={styles.col75}>
           <h2>Diventa partner della prima<br/>Italian Prompt Battle!</h2>
         </div>
@@ -88,7 +134,20 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           <CanvasHeartCube size={250} />
         </div>  
       </div>
-      <div className={styles.inputGroupRow}>
+      
+      {isSuccess && (
+        <>
+          <div 
+            className={`${styles.successMessage} ${showSuccessMessage ? styles.visible : ''}`}
+            dangerouslySetInnerHTML={{
+              __html: isAlreadySubscribed ? getPersonalizedAlreadySubscribedMessage() : getPersonalizedSuccessMessage()
+            }}
+          />
+          <CanvasHeartCube size={250} />
+        </>
+      )}
+      
+      <div className={`${styles.inputGroupRow} ${isSuccess ? styles.hidden : ''}`}>
         <div className={styles.inputGroupCol}>
           <InputField
             name="fields[name]"
@@ -110,7 +169,7 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           <div className={styles.helperText}>Inserisci il nome della tua azienda.</div>
         </div>
       </div>      
-      <div className={styles.inputGroup}>
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
           <InputField
             name="fields[email]"
             type="text"
@@ -120,7 +179,7 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           /> 
           <div className={styles.helperText}>Inserisci il tuo indirizzo email.</div>
       </div>      
-      <div className={styles.inputGroup}>
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
           <textarea
             name="message"
             placeholder='Come vorresti supportarci?'
@@ -129,7 +188,7 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           /> 
       </div>        
       
-      <div className={styles.inputGroup}>        
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>        
         <InputField
           name="fields[sponsor]"
           type="text"
@@ -138,16 +197,14 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           disabled={loading}
           value='true'
           hidden
+          readOnly
         />      
       </div> 
-      <div className={styles.buttonWrapper}>
+      <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`}>
         <FormButton type="submit" disabled={loading} className="revert">
           {submit}
         </FormButton>
       </div>
-      {isSuccess ? (
-        <div style={{ color: '#2e7d32', marginTop: 18, textAlign: 'center', fontWeight: 500 }}>{success}</div>
-      ) : null}
       {isError ? (
         <div style={{ color: '#c62828', marginTop: 18, textAlign: 'center', fontWeight: 500 }}>{error}</div>
       ) : null}

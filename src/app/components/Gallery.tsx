@@ -79,7 +79,6 @@ const Gallery = ({ style }: GalleryProps) => {
     useGSAP(() => {
         // Su mobile, non attivare l'animazione GSAP
         if (isMobileDevice) {
-            console.log('[Gallery] Modalità mobile: animazione GSAP disabilitata');
             return;
         }
 
@@ -144,7 +143,6 @@ const Gallery = ({ style }: GalleryProps) => {
     useEffect(() => {
         // Su mobile, non attivare nulla - scroll completamente normale
         if (isMobileDevice) {
-            console.log('[Gallery] Modalità mobile: tutte le animazioni disabilitate, scroll normale');
             return;
         }
 

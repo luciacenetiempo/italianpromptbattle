@@ -46,14 +46,6 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
       
       setIsMobile(mobileByWidth);
       setIsMobileDetected(mobileByUserAgent);
-      
-      console.log('[AppPreloader] Rilevamento dispositivo:', {
-        width: window.innerWidth,
-        mobileByWidth,
-        mobileByUserAgent,
-        isMobile: mobileByWidth,
-        isMobileDetected: mobileByUserAgent
-      });
     };
     
     checkIsMobile();
@@ -79,7 +71,6 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
     const webmSrc = isMobileDevice ? '/video/ipb-speaking-m.webm' : '/video/ipb-speaking.webm';
     const mp4Src = isMobileDevice ? '/video/ipb-speaking-m.mp4' : '/video/ipb-speaking.mp4';
     
-    console.log('[AppPreloader] Precaricamento video speaking:', { isMobileDevice, webmSrc, mp4Src });
     
     // Aggiungi entrambe le sorgenti
     video.innerHTML = `
@@ -88,12 +79,10 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
     `;
     
     const timeout = setTimeout(() => {
-      console.log('[AppPreloader] Timeout video speaking');
       setPreloadStatus(prev => ({ ...prev, speakingVideo: true }));
     }, 5000); // Timeout di 5 secondi
 
     video.oncanplaythrough = () => {
-      console.log('[AppPreloader] Video speaking precaricato:', video.currentSrc);
       clearTimeout(timeout);
       setPreloadStatus(prev => ({ ...prev, speakingVideo: true }));
     };
@@ -209,7 +198,6 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
 
   // Gestisce la scelta audio e completa il preload
   const handleAudioChoice = (enableAudio: boolean) => {
-    console.log('[AppPreloader] Scelta audio:', enableAudio ? 'Sì' : 'No');
     setAudioEnabled(enableAudio);
     setPreloadStatus(prev => ({ ...prev, userInteraction: true }));
     setIsLoading(false);

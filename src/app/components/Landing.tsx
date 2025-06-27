@@ -43,14 +43,12 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
     if (isMobileDevice) {
       // MOBILE: Video in autoplay, scroll automatico alla fine
       const onMetadataLoaded = () => {
-        console.log('[Landing Mobile] Video caricato, avvio autoplay');
         video.play().catch(error => {
           console.error("Video autoplay failed:", error);
         });
       };
 
       const onVideoEnded = () => {
-        console.log('[Landing Mobile] Video finito, scroll automatico');
         // Scroll automatico fino alla fine per mostrare l'intro
         const el = scrollContainerRef.current;
         if (el) {
@@ -110,12 +108,6 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
 
         // Debug log ridotto
         if (currentScrollFraction % 0.1 < 0.01) {
-          console.log('[Landing Desktop] Scroll:', {
-            scrollTop,
-            scrollableHeight,
-            currentScrollFraction,
-            showIntro: currentScrollFraction >= 0.95
-          });
         }
 
         // Ottimizzazione: aggiorna lo stato solo se il valore cambia
@@ -196,7 +188,6 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
       // mostra l'intro dopo 5 secondi (solo su desktop)
       const timeout = setTimeout(() => {
         if (!showIntro) {
-          console.log('[Landing Desktop] Fallback: mostrando intro automaticamente');
           setShowIntro(true);
         }
       }, 5000);
@@ -225,7 +216,6 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
   const handleToggleSong = () => {
     // Se l'audio non è abilitato e l'utente clicca il pulsante, attivalo
     if (!audioEnabled && !userActivatedAudio) {
-      console.log('[Landing] Utente attiva audio tramite pulsante di controllo');
       setUserActivatedAudio(true);
       setIsSongPlaying(true); // Attiva anche la riproduzione
       return;

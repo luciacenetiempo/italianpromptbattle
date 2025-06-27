@@ -30,7 +30,6 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
   const playAttemptRef = useRef<number | null>(null);
 
   const handleVoiceVideoEnd = useCallback(() => {
-    console.log('[Intro] Video speaking completato');
     setVideoMode('background');
     onSpeakingEnd?.();
   }, [onSpeakingEnd]);
@@ -38,22 +37,8 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
   // Gestione robusta del play del video
   const attemptPlay = useCallback(async () => {
     const video = videoRef.current;
-    console.log('[Intro] attemptPlay chiamato:', { 
-      video: !!video, 
-      isVideoReady, 
-      hasStartedPlaying, 
-      videoMode,
-      currentSrc: video?.currentSrc,
-      readyState: video?.readyState,
-      paused: video?.paused
-    });
     
     if (!video || !isVideoReady || hasStartedPlaying) {
-      console.log('[Intro] attemptPlay abortito:', { 
-        noVideo: !video, 
-        notReady: !isVideoReady, 
-        alreadyStarted: hasStartedPlaying 
-      });
       return;
     }
 
@@ -63,7 +48,6 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
         clearTimeout(playAttemptRef.current);
       }
 
-      console.log('[Intro] Tentativo di avvio video...');
       
       // Aspetta un frame per assicurarsi che il video sia pronto
       await new Promise(resolve => {
@@ -73,20 +57,12 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
       // Avvia il video direttamente
       await video.play();
       setHasStartedPlaying(true);
-      console.log('[Intro] Video avviato con successo');
     } catch (error) {
       console.error('[Intro] Errore nel play del video:', error);
-      console.log('[Intro] Stato video dopo errore:', {
-        readyState: video.readyState,
-        paused: video.paused,
-        currentTime: video.currentTime,
-        duration: video.duration
-      });
       
       // Riprova dopo un breve delay
       setTimeout(() => {
         if (!hasStartedPlaying) {
-          console.log('[Intro] Riprovo il play del video...');
           attemptPlay();
         }
       }, 1000);
@@ -99,22 +75,13 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
     if (!video) return;
 
     const handleCanPlay = () => {
-      console.log(`[Intro] Video pronto per la riproduzione: ${video.currentSrc}`);
-      console.log('[Intro] Stato video in canplay:', {
-        videoMode,
-        hasStartedPlaying,
-        readyState: video.readyState,
-        paused: video.paused
-      });
       setIsVideoReady(true);
     };
 
     const handlePlay = () => {
-      console.log('[Intro] Video in riproduzione');
     };
 
     const handlePause = () => {
-      console.log('[Intro] Video in pausa');
     };
 
     const handleEnded = () => {
@@ -128,11 +95,9 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
     };
 
     const handleWaiting = () => {
-      console.log('[Intro] Video in attesa di dati');
     };
 
     const handleCanPlayThrough = () => {
-      console.log('[Intro] Video può essere riprodotto completamente');
     };
 
     video.addEventListener('canplay', handleCanPlay);
@@ -157,7 +122,6 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, us
   // Effetto separato per avviare il video speaking quando è pronto
   useEffect(() => {
     if (videoMode === 'voice' && isVideoReady && !hasStartedPlaying) {
-      console.log('[Intro] Avvio video speaking...');
       attemptPlay();
     }
   }, [videoMode, isVideoReady, hasStartedPlaying, attemptPlay]);

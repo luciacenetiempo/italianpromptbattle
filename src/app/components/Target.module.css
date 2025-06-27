@@ -1,6 +1,6 @@
 .targetSection {
   width: 100vw;
-  min-height: 100vh;
+  min-height: 150vh;
   position: relative;
   /* overflow: hidden; */
   background: #000000;
@@ -112,7 +112,7 @@
 .left {
   width: 45vw;
   min-width: 320px;
-  height: 100vh;
+  height: 130vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -198,7 +198,7 @@
 .right {
   width: 55vw;
   min-width: 320px;
-  height: 100vh;
+  height: 130vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -213,12 +213,12 @@
   color: #fff;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  margin-bottom: 1.5rem;
+  margin-bottom: 4vh;
   text-shadow: 0 8px 32px rgba(0,0,0,0.7);
   text-align: right;
 }
 
-.ctaButton {
+.ctaEmail {
   background: #fff;
   color: #222;
   border: none;
@@ -231,7 +231,7 @@
   cursor: pointer;
   box-shadow: 0 2px 16px rgba(0,0,0,0.12);
   transition: background 0.18s, color 0.18s, transform 0.18s;
-  margin-top: 2.2rem;
+  margin-top: 3vh;
 }
 .ctaButton:hover, .ctaButton:focus {
   background: #222;
