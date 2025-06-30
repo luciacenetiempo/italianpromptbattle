@@ -5,6 +5,7 @@ import "../../public/fonts/gellix.css";
 import ParticleCanvas from "@/app/components/ParticleCanvas";
 import GlitchCanvas from "@/app/components/GlitchCanvas";
 import AppPreloader from "@/app/components/AppPreloader";
+import ConsentBanner from "@/app/components/ConsentBanner";
 
 export const metadata: Metadata = {
   title: "Italian Prompt Battle – La sfida creativa italiana",
@@ -28,6 +29,15 @@ export default function RootLayout({
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            
+            // Imposta il consenso predefinito su 'denied'
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied'
+            });
+            
             gtag('js', new Date());
             gtag('config', 'G-6Y0CVPFPTQ');
           `}
@@ -39,6 +49,7 @@ export default function RootLayout({
           <GlitchCanvas />
           {children}
         </AppPreloader>
+        <ConsentBanner />
       </body>
     </html>
   );
