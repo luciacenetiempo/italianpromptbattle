@@ -96,6 +96,14 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
           console.error('Errore nell\'invio dell\'email di notifica:', emailError);
         }
 
+        // Tracking Google Analytics - Successo form
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'form_submit_success', {
+            'event_category': 'form',
+            'event_label': 'form_sponsorship_success'
+          });
+        }
+        
         setSuccess(true);
         setError(false);
         // Salva lo stato di success e il nome nel localStorage
@@ -201,7 +209,7 @@ const FormSponsorship: React.FC<FormSponsorshipProps> = ({
         />      
       </div> 
       <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`}>
-        <FormButton type="submit" disabled={loading} className="revert">
+        <FormButton type="submit" disabled={loading} className="revert" trackingLabel="form_sponsorship">
           {submit}
         </FormButton>
       </div>

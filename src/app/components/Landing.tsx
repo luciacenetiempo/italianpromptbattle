@@ -281,7 +281,17 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
 
         {/* Pulsante Pausa/Play Musica - sempre visibile per permettere l'attivazione */}
         <button 
-          onClick={handleToggleSong} 
+          onClick={() => {
+            // Tracking Google Analytics
+            if (typeof window !== 'undefined' && window.gtag) {
+              window.gtag('event', 'click_iscriviti', {
+                'event_category': 'interazione',
+                'event_label': isSongPlaying ? 'music_control_pause' : 'music_control_play',
+                'value': 1
+              });
+            }
+            handleToggleSong();
+          }} 
           className={styles.musicControlButton} 
           aria-label={
             isSongPlaying && (audioEnabled || userActivatedAudio) 

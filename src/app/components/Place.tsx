@@ -74,7 +74,17 @@ const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
           </div>
           <button 
             className={ctaStyles.ctaEmail}
-            onClick={() => onOpenPanel?.('sponsorship')}
+            onClick={() => {
+              // Tracking Google Analytics
+              if (typeof window !== 'undefined' && window.gtag) {
+                window.gtag('event', 'click_iscriviti', {
+                  'event_category': 'interazione',
+                  'event_label': 'cta_place_sponsorship',
+                  'value': 1
+                });
+              }
+              onOpenPanel?.('sponsorship');
+            }}
           >
             <span>↗ SEGNALA UNO SPAZIO PERFETTO</span>
             <span className={ctaStyles.ctaArrow}>

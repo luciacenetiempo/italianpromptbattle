@@ -273,7 +273,21 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
         ref={contentRef} 
         className={`${styles.content} ${isMobileDevice ? styles.mobile : ''}`}
       >
-        <button className={styles.closeButton} onClick={onClose} aria-label="Chiudi">
+        <button 
+          className={styles.closeButton} 
+          onClick={() => {
+            // Tracking Google Analytics
+            if (typeof window !== 'undefined' && window.gtag) {
+              window.gtag('event', 'click_iscriviti', {
+                'event_category': 'interazione',
+                'event_label': 'form_panel_close',
+                'value': 1
+              });
+            }
+            onClose();
+          }} 
+          aria-label="Chiudi"
+        >
           &times;
         </button>
         {formType === 'registration' && <FormAttendee />}

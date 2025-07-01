@@ -173,7 +173,17 @@ const Header: React.FC<HeaderProps> = ({ className, style, onOpenPanel }) => {
       <div className={styles.ctaContainer}>
         <button 
           className={`font-semibold text-black px-7 py-3 ${styles.ctaButton}`}
-          onClick={() => onOpenPanel?.('attendee')}
+          onClick={() => {
+            // Tracking Google Analytics
+            if (typeof window !== 'undefined' && window.gtag) {
+              window.gtag('event', 'click_iscriviti', {
+                'event_category': 'interazione',
+                'event_label': 'cta_header_waitlist',
+                'value': 1
+              });
+            }
+            onOpenPanel?.('attendee');
+          }}
         >
           ENTRA IN<br/>WAIT LIST
         </button>

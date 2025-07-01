@@ -6,6 +6,7 @@
   bottom: 6vh;
   width: 65vw;
   min-width: 320px;
+  max-width: 900px;
   /* background-image: url('/assets/SVG/background-header-2.svg'); */
   background-size: cover;
   background-position: center;

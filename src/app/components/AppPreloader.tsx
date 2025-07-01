@@ -198,6 +198,15 @@ const AppPreloader: React.FC<AppPreloaderProps> = ({ children }) => {
 
   // Gestisce la scelta audio e completa il preload
   const handleAudioChoice = (enableAudio: boolean) => {
+    // Tracking Google Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_iscriviti', {
+        'event_category': 'interazione',
+        'event_label': enableAudio ? 'audio_choice_yes' : 'audio_choice_no',
+        'value': 1
+      });
+    }
+    
     setAudioEnabled(enableAudio);
     setPreloadStatus(prev => ({ ...prev, userInteraction: true }));
     setIsLoading(false);

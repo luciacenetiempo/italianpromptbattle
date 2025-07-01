@@ -30,39 +30,66 @@ export default function ConsentBanner() {
 
   const updateConsent = (newPreferences: ConsentPreferences) => {
     if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('consent', 'update', newPreferences);
+      window.gtag('consent', 'update', newPreferences as unknown as Record<string, unknown>);
     }
   };
 
   const handleAcceptAll = () => {
-    const allGranted: ConsentPreferences = {
+    // Tracking Google Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_iscriviti', {
+        'event_category': 'interazione',
+        'event_label': 'cookie_accept_all',
+        'value': 1
+      });
+    }
+    
+    const acceptPreferences: ConsentPreferences = {
       analytics_storage: 'granted',
       ad_storage: 'granted',
       ad_user_data: 'granted',
       ad_personalization: 'granted'
     };
     
-    updateConsent(allGranted);
-    localStorage.setItem('consent-preferences', JSON.stringify(allGranted));
+    updateConsent(acceptPreferences);
+    localStorage.setItem('consent-preferences', JSON.stringify(acceptPreferences));
     localStorage.setItem('consent-given', 'true');
     setShowBanner(false);
   };
 
   const handleRejectAll = () => {
-    const allDenied: ConsentPreferences = {
+    // Tracking Google Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_iscriviti', {
+        'event_category': 'interazione',
+        'event_label': 'cookie_reject_all',
+        'value': 1
+      });
+    }
+    
+    const rejectPreferences: ConsentPreferences = {
       analytics_storage: 'denied',
       ad_storage: 'denied',
       ad_user_data: 'denied',
       ad_personalization: 'denied'
     };
     
-    updateConsent(allDenied);
-    localStorage.setItem('consent-preferences', JSON.stringify(allDenied));
+    updateConsent(rejectPreferences);
+    localStorage.setItem('consent-preferences', JSON.stringify(rejectPreferences));
     localStorage.setItem('consent-given', 'true');
     setShowBanner(false);
   };
 
   const handleCustomPreferences = () => {
+    // Tracking Google Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_iscriviti', {
+        'event_category': 'interazione',
+        'event_label': 'cookie_custom_preferences',
+        'value': 1
+      });
+    }
+    
     // Per ora accetta solo analytics, rifiuta il resto
     const customPreferences: ConsentPreferences = {
       analytics_storage: 'granted',

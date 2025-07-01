@@ -69,6 +69,14 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       });
       const data = await response.json();
       if (data.success) {
+        // Tracking Google Analytics - Successo form
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'form_submit_success', {
+            'event_category': 'form',
+            'event_label': 'form_registrazione_partecipanti_success'
+          });
+        }
+        
         setSuccess(true);
         setError(false);
         // Salva lo stato di success e il nome nel localStorage
@@ -152,7 +160,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       </div>       
       
       <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`}>
-        <FormButton type="submit" disabled={loading} className="revert">
+        <FormButton type="submit" disabled={loading} className="revert" trackingLabel="form_registrazione_partecipanti">
           {submit}
         </FormButton>
       </div>

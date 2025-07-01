@@ -103,7 +103,17 @@ const Target: React.FC<TargetProps> = ({ onOpenPanel }) => {
           </div>
           <button 
             className={ctaStyles.ctaEmail}
-            onClick={() => onOpenPanel?.('attendee')}
+            onClick={() => {
+              // Tracking Google Analytics
+              if (typeof window !== 'undefined' && window.gtag) {
+                window.gtag('event', 'click_iscriviti', {
+                  'event_category': 'interazione',
+                  'event_label': 'cta_target_waitlist',
+                  'value': 1
+                });
+              }
+              onOpenPanel?.('attendee');
+            }}
           >
             <span>↗ waiting list</span>
             <span className={ctaStyles.ctaArrow}>
