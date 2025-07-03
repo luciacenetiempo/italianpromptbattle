@@ -24,6 +24,8 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
   const [userName, setUserName] = useState('');
+  const [isSfidante, setIsSfidante] = useState(false);
+  const [isPubblico, setIsPubblico] = useState(false);
 
   // Controlla se l'utente è già iscritto al caricamento del componente
   useEffect(() => {
@@ -60,6 +62,14 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     const formData = new FormData(event.target as HTMLFormElement);
     const name = formData.get('fields[name]') as string;
     setUserName(name);
+    
+    // Aggiungi i valori delle checkbox al formData
+    if (isSfidante) {
+      formData.set('fields[partecipante]', 'true');
+    }
+    if (isPubblico) {
+      formData.set('fields[pubblico]', 'true');
+    }
     
     const url = `https://assets.mailerlite.com/jsonp/${listId}/forms/158275940898571283/subscribe`;
     try {
@@ -127,6 +137,52 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
         <CanvasHeartCube size={250} />
         </>
       )}
+      
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
+        <h3 style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>Come vuoi partecipare all&apos;evento?</h3>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={isSfidante}
+              onChange={(e) => setIsSfidante(e.target.checked)}
+              disabled={loading}
+              style={{ width: '18px', height: '18px' }}
+            />
+            <span style={{ fontSize: '16px' }}>Come sfidante</span>
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={isPubblico}
+              onChange={(e) => setIsPubblico(e.target.checked)}
+              disabled={loading}
+              style={{ width: '18px', height: '18px' }}
+            />
+            <span style={{ fontSize: '16px' }}>Come pubblico</span>
+          </label>
+        </div>
+      </div>
+      
+      {/* Campi nascosti per le checkbox */}
+      <InputField
+        name="fields[partecipante]"
+        type="text"
+        placeholder=''
+        required={false}
+        disabled={loading}
+        value={isSfidante ? 'true' : ''}
+        style={{ display: 'none' }}
+      />
+      <InputField
+        name="fields[pubblico]"
+        type="text"
+        placeholder=''
+        required={false}
+        disabled={loading}
+        value={isPubblico ? 'true' : ''}
+        style={{ display: 'none' }}
+      />
       
       <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
         <InputField
