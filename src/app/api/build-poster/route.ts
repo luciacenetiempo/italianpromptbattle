@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import path from 'path';
-import fs from 'fs/promises';
 
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const GENERATED_DIR = path.join(PUBLIC_DIR, 'generated');
 const LOGO_PATH = path.join(PUBLIC_DIR, 'assets/img/logo-w.png');
 const FOOTER_PATH = path.join(PUBLIC_DIR, 'assets/img/poster-footer.png');
 const FONT_REGULAR = path.join(PUBLIC_DIR, 'fonts/gellix/Gellix-Regular.woff2');
@@ -13,15 +11,19 @@ const FONT_SEMIBOLD = path.join(PUBLIC_DIR, 'fonts/gellix/Gellix-SemiBold.woff2'
 
 export async function POST(request: NextRequest) {
   try {
-    const { imagePath, fraseAndromeda, firmaAutore } = await request.json();
-    if (!imagePath) {
-      return NextResponse.json({ error: 'imagePath richiesto' }, { status: 400 });
+    const { imageUrl, fraseAndromeda, firmaAutore } = await request.json();
+    if (!imageUrl) {
+      return NextResponse.json({ error: 'imageUrl richiesto' }, { status: 400 });
     }
 
-    // Carica l'immagine generata
-    const inputImagePath = path.join(GENERATED_DIR, imagePath.replace(/^\/+/, ''));
-    await fs.access(inputImagePath);
-    const img = await loadImage(inputImagePath);
+    // Scarica l'immagine dall'URL di Replicate
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image from URL: ${response.statusText}`);
+    }
+    
+    const imageBuffer = await response.arrayBuffer();
+    const img = await loadImage(Buffer.from(imageBuffer));
 
     // Dimensioni fisse del poster finale
     const posterWidth = 1240;
@@ -157,14 +159,16 @@ export async function POST(request: NextRequest) {
       console.error('Errore caricamento footer:', e);
     }
 
-    // Salva il poster finale
-    const outName = `poster-final-${Date.now()}.png`;
-    const outPath = path.join(GENERATED_DIR, outName);
+    // Restituisce il buffer del poster finale
     const buffer = canvas.toBuffer('image/png');
-    await fs.writeFile(outPath, buffer);
-
-    console.log('Poster finale salvato:', outPath);
-    return NextResponse.json({ success: true, url: `/generated/${outName}` });
+    const base64 = buffer.toString('base64');
+    
+    console.log('Poster finale generato, size:', buffer.length);
+    return NextResponse.json({ 
+      success: true, 
+      posterData: `data:image/png;base64,${base64}`,
+      size: buffer.length
+    });
   } catch (error) {
     console.error('Errore build-poster:', error);
     return NextResponse.json({ error: 'Errore durante la creazione del poster', details: error instanceof Error ? error.message : String(error) }, { status: 500 });

@@ -68,24 +68,21 @@ export default function PromptToPosterPage() {
       const initializePoster = async () => {
         setIsInitializingPoster(true);
         try {
-          // Estrai il nome file dall'URL
-          const imagePath = generatedImage.replace('/generated/', '');
-          
           const response = await fetch('/api/build-poster', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              imagePath,
+              imageUrl: generatedImage,
               firmaAutore: userSignature || undefined
             }),
           });
 
           const data = await response.json();
 
-          if (data.success && data.url) {
-            setFinalPosterUrl(data.url);
+          if (data.success && data.posterData) {
+            setFinalPosterUrl(data.posterData);
           } else {
             console.error('Errore nell\'inizializzazione del poster:', data.error);
           }
@@ -106,24 +103,21 @@ export default function PromptToPosterPage() {
       const updatePoster = async () => {
         setIsBuildingPoster(true);
         try {
-          // Estrai il nome file dall'URL
-          const imagePath = generatedImage.replace('/generated/', '');
-          
           const response = await fetch('/api/build-poster', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              imagePath,
+              imageUrl: generatedImage,
               firmaAutore: userSignature || undefined
             }),
           });
 
           const data = await response.json();
 
-          if (data.success && data.url) {
-            setFinalPosterUrl(data.url);
+          if (data.success && data.posterData) {
+            setFinalPosterUrl(data.posterData);
           } else {
             console.error('Errore nell\'aggiornamento del poster:', data.error);
           }
@@ -138,7 +132,7 @@ export default function PromptToPosterPage() {
       const timeoutId = setTimeout(updatePoster, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [userSignature, selectedLayout, currentScreen, finalPosterUrl, generatedImage, isBuildingPoster]);
+  }, [userSignature, selectedLayout, currentScreen, generatedImage, isBuildingPoster]);
 
   // Simulazione sintesi vocale durante la digitazione
   useEffect(() => {

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Replicate from 'replicate';
-import { writeFile } from 'node:fs/promises';
-import path from 'path'; 
+import Replicate from 'replicate'; 
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -77,36 +75,13 @@ export async function POST(request: NextRequest) {
     const imageUrl = output.url().href;
     console.log('Image URL from Replicate:', imageUrl);
 
-    // Scarica l'immagine dall'URL di Replicate
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image from Replicate: ${response.statusText}`);
-    }
-
-    const imageBuffer = await response.arrayBuffer();
-    console.log('Image buffer size:', imageBuffer.byteLength);
-
-    // Creiamo un nome file unico per l'immagine
-    const timestamp = Date.now();
-    const filename = `poster-${timestamp}.png`;
-    const publicDir = path.join(process.cwd(), 'public', 'generated');
-    const filePath = path.join(publicDir, filename);
-
-    // Assicuriamoci che la directory esista
-    try {
-      await writeFile(filePath, Buffer.from(imageBuffer));
-      console.log('Image saved to:', filePath);
-    } catch (error) {
-      console.error('Error saving image:', error);
-      throw new Error('Failed to save generated image');
-    }
-
-    // Restituiamo l'URL relativo per il frontend
-    const finalImageUrl = `/generated/${filename}`;
+    // In produzione (Vercel), non possiamo scrivere file
+    // Restituiamo direttamente l'URL di Replicate
+    console.log('Using Replicate URL directly:', imageUrl);
     
     return NextResponse.json({
       success: true,
-      imageUrl: finalImageUrl,
+      imageUrl: imageUrl,
       prompt: prompt
     });
 
