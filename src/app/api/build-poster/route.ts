@@ -1,13 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import path from 'path';
+import fs from 'fs/promises';
 
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
 const LOGO_PATH = path.join(PUBLIC_DIR, 'assets/img/logo-w.png');
 const FOOTER_PATH = path.join(PUBLIC_DIR, 'assets/img/poster-footer.png');
-const FONT_REGULAR = path.join(PUBLIC_DIR, 'fonts/gellix/Gellix-Regular.woff2');
-const FONT_MEDIUM = path.join(PUBLIC_DIR, 'fonts/gellix/Gellix-Medium.woff2');
-const FONT_SEMIBOLD = path.join(PUBLIC_DIR, 'fonts/gellix/Gellix-SemiBold.woff2');
+
+// URL dei font Gellix
+const FONT_BASE_URL = 'https://www.italianpromptbattle.com/fonts/gellix';
+const FONT_REGULAR_URL = `${FONT_BASE_URL}/Gellix-Regular.woff2`;
+const FONT_MEDIUM_URL = `${FONT_BASE_URL}/Gellix-Medium.woff2`;
+const FONT_SEMIBOLD_URL = `${FONT_BASE_URL}/Gellix-SemiBold.woff2`;
+
+// Funzione per caricare font da URL
+async function loadFontFromUrl(url: string, family: string, weight?: string) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch font: ${response.statusText}`);
+    
+    const buffer = await response.arrayBuffer();
+    const tempPath = `/tmp/${family}-${weight || 'regular'}.woff2`;
+    
+    // Salva temporaneamente il font
+    await fs.writeFile(tempPath, Buffer.from(buffer));
+    registerFont(tempPath, { family, weight });
+    console.log(`Font ${family} caricato con successo da ${url}`);
+  } catch (error) {
+    console.error(`Errore caricamento font ${family} da ${url}:`, error);
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,14 +58,14 @@ export async function POST(request: NextRequest) {
     const canvas = createCanvas(posterWidth, posterHeight);
     const ctx = canvas.getContext('2d');
 
-    // Registra i font Gellix
+    // Carica i font Gellix dall'URL del sito
     try {
-      registerFont(FONT_REGULAR, { family: 'Gellix' });
-      registerFont(FONT_MEDIUM, { family: 'Gellix', weight: '500' });
-      registerFont(FONT_SEMIBOLD, { family: 'Gellix', weight: '600' });
-      console.log('Font Gellix registrati con successo');
+      await loadFontFromUrl(FONT_REGULAR_URL, 'Gellix');
+      await loadFontFromUrl(FONT_MEDIUM_URL, 'Gellix', '500');
+      await loadFontFromUrl(FONT_SEMIBOLD_URL, 'Gellix', '600');
+      console.log('Font Gellix caricati con successo dall\'URL');
     } catch (e) {
-      console.error('Errore registrazione font:', e);
+      console.error('Errore caricamento font Gellix dall\'URL, usando font di sistema:', e);
     }
 
     // Sfondo nero
@@ -76,7 +98,7 @@ export async function POST(request: NextRequest) {
       ctx.fillStyle = '#dcaf6c';
       ctx.fillRect(60, 45, 320, 80);
       ctx.fillStyle = '#000000';
-      ctx.font = '600 48px Gellix';
+      ctx.font = '600 48px Gellix, Arial, sans-serif';
       ctx.fillText('IPB LOGO', 80, 95);
       console.log('Fallback logo disegnato - più grande e visibile');
     }
@@ -90,11 +112,11 @@ export async function POST(request: NextRequest) {
     const textX = posterWidth - 40;
     
     // MILANO in 30px
-    ctx.font = '600 30px Gellix';
+    ctx.font = '600 30px Gellix, Arial, sans-serif';
     ctx.fillText('MILANO', textX, 60);
     
     // Novembre 2025 in 25px, line height 30px
-    ctx.font = '600 25px Gellix';
+    ctx.font = '600 25px Gellix, Arial, sans-serif';
     ctx.fillText('Novembre 2025', textX, 90);
 
     // Frase Andromeda e firma in basso
@@ -102,7 +124,7 @@ export async function POST(request: NextRequest) {
     const firma = firmaAutore ? `created by — ${firmaAutore}` : '';
     
     // Frase Andromeda: posizione Y=1340px, font size 48px, line height 48px, area max 820px
-    ctx.font = '500 48px Gellix';
+    ctx.font = '500 48px Gellix, Arial, sans-serif';
     ctx.fillStyle = '#ffffff'; // Bianco
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -141,7 +163,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Firma in basso
-    ctx.font = '400 20px Gellix';
+    ctx.font = '400 20px Gellix, Arial, sans-serif';
     ctx.fillStyle = '#dc6f5a';
     ctx.fillText(firma, posterWidth / 2, 1340 + (wrappedLines.length * lineHeight) + 20);
 
