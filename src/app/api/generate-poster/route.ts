@@ -6,9 +6,18 @@ import path from 'path';
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
+
+console.log('Replicate instance created with auth:', !!process.env.REPLICATE_API_TOKEN);
  
 export async function POST(request: NextRequest) {
   try {
+    // Debug: log delle variabili d'ambiente
+    console.log('Environment check:');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('REPLICATE_API_TOKEN exists:', !!process.env.REPLICATE_API_TOKEN);
+    console.log('REPLICATE_API_TOKEN length:', process.env.REPLICATE_API_TOKEN?.length);
+    console.log('REPLICATE_API_TOKEN starts with:', process.env.REPLICATE_API_TOKEN?.substring(0, 10));
+    
     // Verifica che la variabile d'ambiente sia configurata
     if (!process.env.REPLICATE_API_TOKEN) {
       console.error('REPLICATE_API_TOKEN non configurata');
