@@ -113,7 +113,7 @@ const AndromedaQuoteAnimation: React.FC<AndromedaQuoteAnimationProps> = ({
 
     const timer = setTimeout(startAnimation, 500); // Piccolo delay iniziale
     return () => clearTimeout(timer);
-  }, [text, autoStart, animationDelay, onAnimationComplete, isMobile]);
+  }, [text, autoStart, animationDelay, onAnimationComplete, isMobile, pauseOnComplete]);
 
   // Effetto Glitch durante l'animazione
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import FormNewsletter from './FormNewsletter';
 import FormSponsorship from './FormSponsorship';
@@ -183,10 +183,10 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
         animationRef.current = null;
       }
     }
-  }, [isOpen, isMobileDevice]);
+  }, [isOpen, isMobileDevice, isExpanded]);
 
   // Gestisce l'espansione del pannello su mobile
-  const handleInputFocus = () => {
+  const handleInputFocus = useCallback(() => {
     if (isMobileDevice && !isExpanded) {
       setIsExpanded(true);
       if (contentRef.current) {
@@ -204,10 +204,10 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
         });
       }
     }
-  };
+  }, [isMobileDevice, isExpanded]);
 
   // Gestisce il ritorno alla dimensione normale
-  const handleInputBlur = () => {
+  const handleInputBlur = useCallback(() => {
     if (isMobileDevice && isExpanded) {
       // Piccolo delay per permettere al focus di spostarsi su altri elementi
       setTimeout(() => {
@@ -230,7 +230,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
         }
       }, 100);
     }
-  };
+  }, [isMobileDevice, isExpanded]);
 
   // Aggiungi event listeners per i form
   useEffect(() => {
@@ -260,7 +260,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
       contentEl.removeEventListener('focusin', handleFocus);
       contentEl.removeEventListener('focusout', handleBlur);
     };
-  }, [isOpen, isMobileDevice, isExpanded]);
+  }, [isOpen, isMobileDevice, isExpanded, handleInputBlur, handleInputFocus]);
 
   if (!isOpen) {
     return null;

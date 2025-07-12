@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Header from '../components/Header';
 import CanvasHeartCube from '../components/CanvasHeartCube';
 import styles from './PromptToPoster.module.css';
+import Image from 'next/image';
 
 // Tracce audio di Andromeda
 const audioQuotes = [
@@ -19,55 +19,20 @@ const audioQuotes = [
   '/assets/audio/prompt-to-poster/quote-10.mp3'
 ];
 
-// Layout poster disponibili
-const posterLayouts = [
-  { 
-    id: 'vertical', 
-    name: 'Poster Verticale', 
-    description: 'Immagine + citazione di Andromeda',
-    preview: '🖼️ + 💬'
-  },
-  { 
-    id: 'minimal', 
-    name: 'Poster Minimal', 
-    description: 'Solo immagine con titolo',
-    preview: '🖼️'
-  },
-  { 
-    id: 'visual-poetic', 
-    name: 'Poster Visual-Poetico', 
-    description: 'Prompt integrato con glitch tipografico',
-    preview: '🖼️ + ✨'
-  }
-];
 
-// Easter egg prompts di Andromeda
-const easterEggPrompts = [
-  "Un mostro di luce che danza nel vuoto quantico",
-  "La mia anima trasformata in geometria sacra",
-  "Un sussurro che diventa tempesta di colori",
-  "Il coraggio di essere vulnerabile, visibile",
-  "Una porta verso dimensioni parallele"
-];
 
 type Screen = 'welcome' | 'input' | 'generating' | 'builder' | 'final';
 
 export default function PromptToPosterPage() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [prompt, setPrompt] = useState('');
-  const [translatedPrompt, setTranslatedPrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState('');
-  const [selectedLayout, setSelectedLayout] = useState('vertical');
+  const [selectedLayout] = useState('vertical');
   const [userSignature, setUserSignature] = useState('');
-  const [currentAudioIndex, setCurrentAudioIndex] = useState(() => Math.floor(Math.random() * audioQuotes.length));
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const [showGlitch, setShowGlitch] = useState(false);
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [easterEggUnlocked, setEasterEggUnlocked] = useState(false);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
-  const [isARMode, setIsARMode] = useState(false);
   const [finalPosterUrl, setFinalPosterUrl] = useState('');
   const [isBuildingPoster, setIsBuildingPoster] = useState(false);
   const [isInitializingPoster, setIsInitializingPoster] = useState(false);
@@ -80,13 +45,11 @@ export default function PromptToPosterPage() {
     if (currentScreen === 'input') {
       // Seleziona una citazione random
       const randomIndex = Math.floor(Math.random() * audioQuotes.length);
-      setCurrentAudioIndex(randomIndex);
       
       // Riproduci l'audio automaticamente
       const audio = new Audio(audioQuotes[randomIndex]);
       audio.volume = 0.7;
       audio.play().catch(console.error);
-      setAudioElement(audio);
     }
   }, [currentScreen]);
 
@@ -107,9 +70,6 @@ export default function PromptToPosterPage() {
         try {
           // Estrai il nome file dall'URL
           const imagePath = generatedImage.replace('/generated/', '');
-          
-          // Frase di Andromeda casuale
-          const randomFrase = audioQuotes[Math.floor(Math.random() * audioQuotes.length)];
           
           const response = await fetch('/api/build-poster', {
             method: 'POST',
@@ -178,7 +138,7 @@ export default function PromptToPosterPage() {
       const timeoutId = setTimeout(updatePoster, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [userSignature, selectedLayout]);
+  }, [userSignature, selectedLayout, currentScreen, finalPosterUrl, generatedImage, isBuildingPoster]);
 
   // Simulazione sintesi vocale durante la digitazione
   useEffect(() => {
@@ -229,8 +189,6 @@ export default function PromptToPosterPage() {
         audio.volume = 0.7;
         audio.play().catch(console.error);
       }
-      setEasterEggUnlocked(true);
-      setCurrentScreen('input');
       
       // Tracking easter egg
       if (typeof window !== 'undefined' && window.gtag) {
@@ -276,7 +234,7 @@ export default function PromptToPosterPage() {
       });
     }
     
-    setIsGenerating(true);
+    setIsInitializingPoster(true);
     setCurrentScreen('generating');
     
     try {
@@ -284,7 +242,6 @@ export default function PromptToPosterPage() {
       
       // Traduci il prompt prima di inviarlo
       const translatedText = await translatePrompt(prompt);
-      setTranslatedPrompt(translatedText);
       
       const response = await fetch('/api/generate-poster', {
         method: 'POST',
@@ -336,7 +293,7 @@ export default function PromptToPosterPage() {
         });
       }
     } finally {
-      setIsGenerating(false);
+      setIsInitializingPoster(false);
     }
   };
 
@@ -376,71 +333,6 @@ export default function PromptToPosterPage() {
     }
   };
 
-  const handlePrint = () => {
-    // Tracking stampa
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'print_poster', {
-        'event_category': 'prompt_to_poster',
-        'event_label': 'print_at_event',
-        'value': 1
-      });
-    }
-    
-    // Simulazione stampa
-    alert('Modalità stampa attivata! Presentati al banco stampa.');
-    
-    // Transizione alla schermata finale dopo la stampa
-    setTimeout(() => {
-      setCurrentScreen('final');
-    }, 1000);
-  };
-
-  const handleShare = () => {
-    // Tracking condivisione
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'share_poster', {
-        'event_category': 'prompt_to_poster',
-        'event_label': 'social_share',
-        'value': 1
-      });
-    }
-    
-    // Simulazione condivisione social
-    if (navigator.share) {
-      navigator.share({
-        title: 'Il mio poster IPB',
-        text: 'Ho creato questo poster con Italian Prompt Battle!',
-        url: window.location.href
-      });
-    } else {
-      // Fallback per browser che non supportano Web Share API
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link copiato negli appunti!');
-    }
-  };
-
-
-
-
-
-  const handleARExperience = () => {
-    // Tracking esperienza AR
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'ar_experience', {
-        'event_category': 'prompt_to_poster',
-        'event_label': 'ar_activation',
-        'value': 1
-      });
-    }
-    
-    setIsARMode(true);
-    // Simulazione esperienza AR
-    setTimeout(() => {
-      setIsARMode(false);
-      alert('Esperienza AR completata! Il tuo poster ha preso vita.');
-    }, 3000);
-  };
-
   // Schermata Welcome
   if (currentScreen === 'welcome') {
     return (
@@ -469,7 +361,7 @@ export default function PromptToPosterPage() {
               Pront<span className="text-[#dc6f5a]">*</span> a generare?
             </h2>
             <p className="text-xl text-gray-300 leading-relaxed">
-              Scrivi un prompt. Ottieni un'opera. Stampala.
+              Scrivi un prompt. Ottieni un&apos;opera. Stampala.
             </p>
           </div>
 
@@ -533,7 +425,7 @@ export default function PromptToPosterPage() {
 
           {error && (
             <div className="mt-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4 max-w-md">
-              <p className="text-red-300 text-sm">{error}</p>
+              <p className="text-red-300 text-sm">{error.replace("'", "&apos;")}</p>
             </div>
           )}
         </div>
@@ -576,7 +468,7 @@ export default function PromptToPosterPage() {
           <div className="max-w-2xl mx-auto">
             <div className={`bg-white/5 backdrop-blur-sm rounded-none p-6 border border-[#18171c] ${styles.glitchContainer}`}>
               <p className={`text-[#dcaf6c] font-mono text-lg ${styles.glitchText}`}>
-                "{prompt}"
+                &quot;{prompt}&quot;
               </p>
             </div>
           </div>
@@ -631,10 +523,13 @@ export default function PromptToPosterPage() {
                   )}
                   
                   <div className={`w-full aspect-[1240/1754] bg-gradient-to-br from-white/5 to-white/10 border-2 border-[#18171c] rounded-none overflow-hidden relative group ${styles.previewContainer}`}>
-                    <img 
+                    <Image 
                       src={finalPosterUrl || generatedImage} 
                       alt="Poster generato" 
                       className={`w-full h-full object-contain transition-all duration-500 ${styles.previewImage}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{objectFit: 'contain'}}
                     />
                     <div className={`absolute inset-0 bg-gradient-to-br from-[#dc6f5a]/20 to-[#dcaf6c]/20 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center ${styles.previewOverlay}`}>
                       <div className="text-center">
@@ -643,7 +538,7 @@ export default function PromptToPosterPage() {
                           Poster finale con logo, testo e firma
                         </p>
                         <p className="text-[#dcaf6c] text-xs mt-1">
-                          Tap & hold per zoom
+                          Tap &amp; hold per zoom
                         </p>
                       </div>
                     </div>
@@ -681,7 +576,7 @@ export default function PromptToPosterPage() {
                 
                 {/* Riga 2: Firma */}
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-4">Firma l'opera</h2>
+                  <h2 className="text-xl font-semibold text-white mb-4">Firma l&apos;opera</h2>
                   <input
                     type="text"
                     value={userSignature}

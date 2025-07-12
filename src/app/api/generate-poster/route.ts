@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       }
     );
     
-    const [output] = result as any[];
+    const [output] = result as unknown[];
 
     console.log('Generation completed:', output);
     console.log('Output type:', typeof output);
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     // Assicuriamoci che la directory esista
     try {
-      await writeFile(filePath, output);
+      await writeFile(filePath, output as Buffer);
       console.log('Image saved to:', filePath);
     } catch (error) {
       console.error('Error saving image:', error);
