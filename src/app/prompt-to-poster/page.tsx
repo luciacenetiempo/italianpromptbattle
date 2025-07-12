@@ -39,6 +39,7 @@ export default function PromptToPosterPage() {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const lastSignatureRef = useRef<string>('');
 
   // Autoplay audio quando si arriva alla schermata input
   useEffect(() => {
@@ -99,6 +100,11 @@ export default function PromptToPosterPage() {
 
   // Aggiorna il poster quando cambiano le impostazioni
   useEffect(() => {
+    // Evita il loop se la firma non è cambiata
+    if (lastSignatureRef.current === userSignature) {
+      return;
+    }
+    
     if (currentScreen === 'builder' && finalPosterUrl && !isBuildingPoster) {
       const updatePoster = async () => {
         setIsBuildingPoster(true);
@@ -118,6 +124,8 @@ export default function PromptToPosterPage() {
 
           if (data.success && data.posterData) {
             setFinalPosterUrl(data.posterData);
+            // Aggiorna il ref con la firma corrente
+            lastSignatureRef.current = userSignature;
           } else {
             console.error('Errore nell\'aggiornamento del poster:', data.error);
           }
