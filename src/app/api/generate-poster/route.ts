@@ -63,17 +63,19 @@ export async function POST(request: NextRequest) {
     console.log('Result type:', typeof result);
     console.log('Result constructor:', result?.constructor?.name);
 
-    // Replicate restituisce un array con URL delle immagini
+    // Replicate restituisce un array con oggetti file
     if (!result || !Array.isArray(result) || result.length === 0) {
       throw new Error('No valid output received from Replicate');
     }
 
-    const imageUrl = result[0];
-    console.log('Image URL from Replicate:', imageUrl);
+    const output = result[0];
+    console.log('Output from Replicate:', output);
+    console.log('Output type:', typeof output);
+    console.log('Output has url method:', typeof output?.url === 'function');
 
-    if (typeof imageUrl !== 'string') {
-      throw new Error('Invalid image URL received from Replicate');
-    }
+    // Ottieni l'URL dell'immagine
+    const imageUrl = output.url().href;
+    console.log('Image URL from Replicate:', imageUrl);
 
     // Scarica l'immagine dall'URL di Replicate
     const response = await fetch(imageUrl);
