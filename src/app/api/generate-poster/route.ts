@@ -4,11 +4,20 @@ import { writeFile } from 'node:fs/promises';
 import path from 'path';
 
 const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN || 'r8_cltiTPA4aA6dgOzjNQFvt5X8hMdACdR1xCT00',
+  auth: process.env.REPLICATE_API_TOKEN,
 });
 
 export async function POST(request: NextRequest) {
   try {
+    // Verifica che la variabile d'ambiente sia configurata
+    if (!process.env.REPLICATE_API_TOKEN) {
+      console.error('REPLICATE_API_TOKEN non configurata');
+      return NextResponse.json(
+        { error: 'API configuration error' },
+        { status: 500 }
+      );
+    }
+
     const { prompt } = await request.json();
 
     if (!prompt || typeof prompt !== 'string') {
