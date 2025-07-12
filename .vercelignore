@@ -1,0 +1,22 @@
+# Video files (too large for serverless functions)
+public/video/
+
+# Development files
+.env.local
+.env.development
+*.log
+
+# Build artifacts
+.next/cache/
+.next/server/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Dependencies (will be installed on Vercel)
+node_modules/ 
