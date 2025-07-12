@@ -59,16 +59,30 @@ export async function POST(request: NextRequest) {
       }
     );
     
-    const [output] = result as unknown[];
+    console.log('Raw result from Replicate:', result);
+    console.log('Result type:', typeof result);
+    console.log('Result constructor:', result?.constructor?.name);
 
-    console.log('Generation completed:', output);
-    console.log('Output type:', typeof output);
-    console.log('Output constructor:', output?.constructor?.name);
-
-    // Replicate restituisce un buffer dell'immagine, non un URL
-    if (!output || typeof output !== 'object') {
+    // Replicate restituisce un array con URL delle immagini
+    if (!result || !Array.isArray(result) || result.length === 0) {
       throw new Error('No valid output received from Replicate');
     }
+
+    const imageUrl = result[0];
+    console.log('Image URL from Replicate:', imageUrl);
+
+    if (typeof imageUrl !== 'string') {
+      throw new Error('Invalid image URL received from Replicate');
+    }
+
+    // Scarica l'immagine dall'URL di Replicate
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image from Replicate: ${response.statusText}`);
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    console.log('Image buffer size:', imageBuffer.byteLength);
 
     // Creiamo un nome file unico per l'immagine
     const timestamp = Date.now();
@@ -78,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     // Assicuriamoci che la directory esista
     try {
-      await writeFile(filePath, output as Buffer);
+      await writeFile(filePath, Buffer.from(imageBuffer));
       console.log('Image saved to:', filePath);
     } catch (error) {
       console.error('Error saving image:', error);
@@ -86,11 +100,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Restituiamo l'URL relativo per il frontend
-    const imageUrl = `/generated/${filename}`;
+    const finalImageUrl = `/generated/${filename}`;
     
     return NextResponse.json({
       success: true,
-      imageUrl: imageUrl,
+      imageUrl: finalImageUrl,
       prompt: prompt
     });
 
