@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef, useEffect } from 'react';
 
 const CanvasHeartCube: React.FC<{ size?: number }> = ({ size = 300 }) => {

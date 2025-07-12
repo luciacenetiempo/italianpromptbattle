@@ -1,0 +1,394 @@
+/* Animazioni personalizzate per Prompt to Poster */
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes quantumVibration {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(1px);
+  }
+  75% {
+    transform: translateX(-1px);
+  }
+}
+
+@keyframes glitchPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes oscilloscope {
+  0% {
+    transform: scaleX(0);
+  }
+  50% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes liquidBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* @keyframes spatialAmbient rimosso per pulizia */
+
+/* Classi di utilità */
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-quantum-vibration {
+  animation: quantumVibration 0.1s ease-in-out;
+}
+
+.animate-glitch-pulse {
+  animation: glitchPulse 0.3s ease-in-out;
+}
+
+.animate-oscilloscope {
+  animation: oscilloscope 2s infinite;
+}
+
+.animate-liquid-bounce {
+  animation: liquidBounce 0.6s ease-in-out;
+}
+
+/* .animate-spatial-ambient rimosso per pulizia */
+
+/* Effetti hover avanzati */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(220, 111, 90, 0.3);
+}
+
+/* Effetti di transizione glitch */
+.glitch-transition {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitch-transition::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(220, 111, 90, 0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.glitch-transition:hover::before {
+  left: 100%;
+}
+
+/* Effetti di testo */
+.text-glow {
+  text-shadow: 0 0 10px rgba(220, 111, 90, 0.5);
+}
+
+.text-quantum {
+  animation: quantumVibration 0.1s ease-in-out;
+}
+
+/* Effetti di sfondo dinamici rimossi per pulizia */
+
+/* Effetti di pulsazione per i bottoni */
+.btn-pulse {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-pulse::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-pulse:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Effetti di caricamento avanzati */
+.loading-oscilloscope {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.loading-oscilloscope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid #dc6f5a;
+  border-radius: 50%;
+  animation: oscilloscope 2s infinite;
+}
+
+/* Effetti di testo animato */
+.text-typewriter {
+  overflow: hidden;
+  border-right: 2px solid #dc6f5a;
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: #dc6f5a; }
+}
+
+/* Effetti di particelle */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #dc6f5a;
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive design per mobile */
+@media (max-width: 768px) {
+  .animate-shimmer {
+    animation-duration: 1.5s;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+  
+  .text-typewriter {
+    font-size: 0.9rem;
+  }
+}
+
+/* Effetti glitch per il testo */
+.textGlitch {
+  animation: textGlitch 0.3s ease-in-out;
+}
+
+@keyframes textGlitch {
+  0%, 100% {
+    transform: translateX(0);
+    text-shadow: none;
+  }
+  25% {
+    transform: translateX(2px);
+    text-shadow: 2px 0 #dc6f5a;
+  }
+  50% {
+    transform: translateX(-2px);
+    text-shadow: -2px 0 #dcaf6c;
+  }
+  75% {
+    transform: translateX(1px);
+    text-shadow: 1px 0 #dc6f5a;
+  }
+}
+
+/* Container glitch per il prompt */
+.glitchContainer {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitchContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(220, 111, 90, 0.1), transparent);
+  animation: glitchScan 2s infinite;
+}
+
+@keyframes glitchScan {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+.glitchText {
+  position: relative;
+  animation: glitchText 3s infinite;
+}
+
+@keyframes glitchText {
+  0%, 90%, 100% {
+    transform: translateX(0);
+    text-shadow: none;
+  }
+  91% {
+    transform: translateX(1px);
+    text-shadow: 1px 0 #dc6f5a;
+  }
+  92% {
+    transform: translateX(-1px);
+    text-shadow: -1px 0 #dcaf6c;
+  }
+  93% {
+    transform: translateX(0);
+    text-shadow: none;
+  }
+}
+
+/* Progress bar animata */
+.progressBar {
+  animation: progressFill 3s ease-in-out infinite;
+  background-size: 200% 100%;
+  background-image: linear-gradient(90deg, #dc6f5a, #dcaf6c, #dc6f5a, #dcaf6c);
+}
+
+@keyframes progressFill {
+  0% {
+    width: 0%;
+    background-position: 0% 50%;
+  }
+  50% {
+    width: 70%;
+    background-position: 100% 50%;
+  }
+  100% {
+    width: 100%;
+    background-position: 0% 50%;
+  }
+}
+
+/* Preview interattiva */
+.previewContainer {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.previewImage {
+  transform: scale(1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.previewContainer:hover .previewImage {
+  transform: scale(1.05) rotateY(5deg);
+  filter: brightness(1.1) contrast(1.1);
+}
+
+.previewOverlay {
+  background: linear-gradient(135deg, rgba(220, 111, 90, 0.3), rgba(220, 175, 108, 0.3));
+  backdrop-filter: blur(10px);
+  transform: scale(0.9);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.previewContainer:hover .previewOverlay {
+  transform: scale(1);
+}
+
+.previewBorder {
+  box-shadow: 0 0 20px rgba(220, 111, 90, 0.5);
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 111, 90, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(220, 111, 90, 0.8);
+  }
+}
+
+/* Effetti di accessibilità */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-quantum-vibration,
+  .animate-glitch-pulse,
+  .animate-oscilloscope,
+  .animate-liquid-bounce,
+  /* .animate-spatial-ambient, */
+  .textGlitch,
+  .glitchText,
+  .progressBar {
+    animation: none;
+  }
+  
+  .hover-lift:hover,
+  .previewContainer:hover .previewImage {
+    transform: none;
+  }
+} 
+.promptToPoster h2{
+  color: #fff;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.promptToPoster textarea{
+  background: transparent;
+  border: 0;
+}
