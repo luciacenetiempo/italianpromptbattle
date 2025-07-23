@@ -6,6 +6,49 @@ const PUBLIC_DIR = path.join(process.cwd(), 'public');
 const LOGO_PATH = path.join(PUBLIC_DIR, 'assets/img/logo-w.png');
 const FOOTER_PATH = path.join(PUBLIC_DIR, 'assets/img/poster-footer.png');
 
+// Configurazione font robusta per produzione
+const getFontConfig = () => {
+  // Font stack semplificato e compatibile con la maggior parte dei server
+  const fontStack = [
+    'Arial',
+    'Helvetica', 
+    'sans-serif'
+  ];
+  
+  return fontStack.join(', ');
+};
+
+// Test di rendering del testo per verificare che i font funzionino
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const testFontRendering = (ctx: any, font: string) => {
+  try {
+    ctx.font = `400 20px ${font}`;
+    const testText = 'Test ABC 123 àèéìòù';
+    const metrics = ctx.measureText(testText);
+    console.log(`Test font ${font}:`, {
+      width: metrics.width,
+      actualBoundingBoxAscent: metrics.actualBoundingBoxAscent,
+      actualBoundingBoxDescent: metrics.actualBoundingBoxDescent
+    });
+    return metrics.width > 0;
+  } catch (error) {
+    console.error(`Errore test font ${font}:`, error);
+    return false;
+  }
+};
+
+// Sanitizza il testo per rimuovere caratteri problematici
+const sanitizeText = (text: string): string => {
+  if (!text) return '';
+  
+  // Rimuovi caratteri di controllo e caratteri non stampabili
+  return text
+    .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Caratteri di controllo
+    .replace(/[\uFFFD]/g, '') // Carattere di sostituzione Unicode
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Spazi zero-width
+    .trim();
+};
+
 export async function POST(request: NextRequest) {
   try {
     const { imageUrl, fraseAndromeda, firmaAutore } = await request.json();
@@ -33,8 +76,12 @@ export async function POST(request: NextRequest) {
     const canvas = createCanvas(posterWidth, posterHeight);
     const ctx = canvas.getContext('2d');
 
-    // Usa font di sistema affidabili
-    console.log('Usando font di sistema Helvetica/Arial');
+    // Usa configurazione font robusta
+    const primaryFont = getFontConfig();
+    console.log('Usando font stack robusto per produzione');
+    
+    // Test di rendering del font
+    testFontRendering(ctx, primaryFont);
 
     // Sfondo nero
     ctx.fillStyle = '#000000';
@@ -66,7 +113,7 @@ export async function POST(request: NextRequest) {
       ctx.fillStyle = '#dcaf6c';
       ctx.fillRect(60, 45, 320, 80);
       ctx.fillStyle = '#000000';
-      ctx.font = '600 48px Helvetica, Arial, sans-serif';
+      ctx.font = `600 48px ${primaryFont}`;
       ctx.fillText('IPB LOGO', 80, 95);
       console.log('Fallback logo disegnato - più grande e visibile');
     }
@@ -80,19 +127,19 @@ export async function POST(request: NextRequest) {
     const textX = posterWidth - 40;
     
     // MILANO in 30px
-    ctx.font = '600 30px Helvetica, Arial, sans-serif';
+    ctx.font = `600 30px ${primaryFont}`;
     ctx.fillText('MILANO', textX, 60);
     
     // Novembre 2025 in 25px, line height 30px
-    ctx.font = '600 25px Helvetica, Arial, sans-serif';
+    ctx.font = `600 25px ${primaryFont}`;
     ctx.fillText('Novembre 2025', textX, 90);
 
     // Frase Andromeda e firma in basso
-    const frase = fraseAndromeda || '"Se non stai rischiando, non stai creando."';
-    const firma = firmaAutore ? `created by — ${firmaAutore}` : '';
+    const frase = sanitizeText(fraseAndromeda || '"Se non stai rischiando, non stai creando."');
+    const firma = sanitizeText(firmaAutore ? `created by — ${firmaAutore}` : '');
     
     // Frase Andromeda: posizione Y=1340px, font size 48px, line height 48px, area max 820px
-    ctx.font = '500 48px Helvetica, Arial, sans-serif';
+    ctx.font = `500 48px ${primaryFont}`;
     ctx.fillStyle = '#ffffff'; // Bianco
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -131,7 +178,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Firma in basso
-    ctx.font = '400 20px Helvetica, Arial, sans-serif';
+    ctx.font = `400 20px ${primaryFont}`;
     ctx.fillStyle = '#dc6f5a';
     ctx.fillText(firma, posterWidth / 2, 1340 + (wrappedLines.length * lineHeight) + 20);
 

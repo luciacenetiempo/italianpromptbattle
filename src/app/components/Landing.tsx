@@ -16,19 +16,17 @@ interface LandingProps {
 
 const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, onOpenPanel }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const songAudioRef = useRef<HTMLAudioElement>(null);
+
   const [scrollFraction, setScrollFraction] = useState(0);
-  const [isSongPlaying, setIsSongPlaying] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(false);
   const [maxHeaderProgress, setMaxHeaderProgress] = useState(0);
   const [textAnimationComplete, setTextAnimationComplete] = useState(false);
   const animationStartTimeRef = useRef<number | null>(null);
-  const [userActivatedAudio, setUserActivatedAudio] = useState(false);
   
   // Utilizza il context per rilevare il dispositivo
-  const { isMobile, isMobileDetected, audioEnabled } = useDevice();
+  const { isMobile, isMobileDetected } = useDevice();
   const isMobileDevice = isMobile || isMobileDetected;
 
   // Ref per l'animazione fluida
@@ -196,34 +194,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
     }
   }, [showIntro, scrollFraction, isMobileDevice]);
 
-  // useEffect che gestisce la musica di sottofondo - rispetta la scelta dell'utente
-  useEffect(() => {
-    const audio = songAudioRef.current;
-    if (!audio) return;
 
-    // L'audio parte se l'utente ha scelto di attivarlo inizialmente O se l'ha attivato tramite pulsante
-    const shouldPlayAudio = (audioEnabled || userActivatedAudio) && isSongPlaying;
-    
-    if (shouldPlayAudio) {
-      audio.play().catch(error => {
-        console.error("Background song play failed:", error);
-      });
-    } else {
-      audio.pause();
-    }
-  }, [audioEnabled, userActivatedAudio, isSongPlaying]);
-
-  const handleToggleSong = () => {
-    // Se l'audio non è abilitato e l'utente clicca il pulsante, attivalo
-    if (!audioEnabled && !userActivatedAudio) {
-      setUserActivatedAudio(true);
-      setIsSongPlaying(true); // Attiva anche la riproduzione
-      return;
-    }
-    
-    // Se l'audio è già attivo, gestisci play/pause normalmente
-    setIsSongPlaying(!isSongPlaying);
-  };
 
   const titleText = "Qualcosa di nuovo\nsta per succedere";
   const totalChars = titleText.replace(/\n/g, '').length;
@@ -277,36 +248,7 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
         {/* Preload dei video in entrambi i formati */}
       </Head>
       <div style={{ background: '#000', position: 'relative' }}>
-        <audio ref={songAudioRef} src="/assets/audio/song.mp3" loop />
 
-        {/* Pulsante Pausa/Play Musica - sempre visibile per permettere l'attivazione */}
-        <button 
-          onClick={() => {
-            // Tracking Google Analytics
-            if (typeof window !== 'undefined' && window.gtag) {
-              window.gtag('event', 'click_iscriviti', {
-                'event_category': 'interazione',
-                'event_label': isSongPlaying ? 'music_control_pause' : 'music_control_play',
-                'value': 1
-              });
-            }
-            handleToggleSong();
-          }} 
-          className={styles.musicControlButton} 
-          aria-label={
-            isSongPlaying && (audioEnabled || userActivatedAudio) 
-              ? 'Pausa musica' 
-              : (audioEnabled || userActivatedAudio) 
-                ? 'Riproduci musica' 
-                : 'Attiva audio'
-          }
-        >
-          {isSongPlaying && (audioEnabled || userActivatedAudio) ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          )}
-        </button>
 
         <div ref={scrollContainerRef} className={styles.scrollContainer}>
           <div className={styles.stickyContainer}>
@@ -327,7 +269,6 @@ const Landing: React.FC<LandingProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed
                 <Intro 
                   onSpeakingEnd={onSpeakingEnd} 
                   hasSpeakingVideoPlayed={hasSpeakingVideoPlayed}
-                  userActivatedAudio={userActivatedAudio}
                 />
               </div>
             )}

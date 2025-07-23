@@ -5,16 +5,15 @@ import { useDevice } from './DeviceContext';
 interface IntroProps {
   onSpeakingEnd?: () => void;
   hasSpeakingVideoPlayed?: boolean;
-  userActivatedAudio?: boolean;
 }
 
-const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed, userActivatedAudio = false }) => {
+const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed }) => {
   // Utilizza il context per rilevare il dispositivo
   const { isMobile, isMobileDetected, audioEnabled } = useDevice();
   const isMobileDevice = isMobile || isMobileDetected;
   
-  // L'audio è abilitato se è stato scelto inizialmente O se l'utente l'ha attivato tramite pulsante
-  const isAudioEnabled = audioEnabled || userActivatedAudio;
+  // L'audio è abilitato se è stato scelto inizialmente
+  const isAudioEnabled = audioEnabled;
   
   const [videoMode, setVideoMode] = useState<'voice' | 'background'>(
     // Se l'audio è disattivato, vai direttamente al background

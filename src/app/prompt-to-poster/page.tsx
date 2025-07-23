@@ -2,22 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import CanvasHeartCube from '../components/CanvasHeartCube';
+import PromptToPosterAudio from '../components/PromptToPosterAudio';
 import styles from './PromptToPoster.module.css';
 import Image from 'next/image';
-
-// Tracce audio di Andromeda
-const audioQuotes = [
-  '/assets/audio/prompt-to-poster/quote-1.mp3',
-  '/assets/audio/prompt-to-poster/quote-2.mp3',
-  '/assets/audio/prompt-to-poster/quote-3.mp3',
-  '/assets/audio/prompt-to-poster/quote-4.mp3',
-  '/assets/audio/prompt-to-poster/quote-5.mp3',
-  '/assets/audio/prompt-to-poster/quote-6.mp3',
-  '/assets/audio/prompt-to-poster/quote-7.mp3',
-  '/assets/audio/prompt-to-poster/quote-8.mp3',
-  '/assets/audio/prompt-to-poster/quote-9.mp3',
-  '/assets/audio/prompt-to-poster/quote-10.mp3'
-];
 
 
 
@@ -41,18 +28,7 @@ export default function PromptToPosterPage() {
   const logoRef = useRef<HTMLDivElement>(null);
   const lastSignatureRef = useRef<string>('');
 
-  // Autoplay audio quando si arriva alla schermata input
-  useEffect(() => {
-    if (currentScreen === 'input') {
-      // Seleziona una citazione random
-      const randomIndex = Math.floor(Math.random() * audioQuotes.length);
-      
-      // Riproduci l'audio automaticamente
-      const audio = new Audio(audioQuotes[randomIndex]);
-      audio.volume = 0.7;
-      audio.play().catch(console.error);
-    }
-  }, [currentScreen]);
+
 
   // Effetto glitch durante la digitazione
   useEffect(() => {
@@ -184,13 +160,6 @@ export default function PromptToPosterPage() {
     console.log('Long press started');
     const timer = setTimeout(() => {
       console.log('Easter egg triggered!');
-      const randomAudio = audioQuotes[Math.floor(Math.random() * audioQuotes.length)];
-      // Riproduci audio casuale per easter egg
-      if (typeof window !== 'undefined') {
-        const audio = new Audio(randomAudio);
-        audio.volume = 0.7;
-        audio.play().catch(console.error);
-      }
       
       // Tracking easter egg
       if (typeof window !== 'undefined' && window.gtag) {
@@ -340,6 +309,7 @@ export default function PromptToPosterPage() {
     return (
       <main  className={`${styles.promptToPoster} min-h-screen relative overflow-hidden`}>
         <GlitchCanvas />
+        <PromptToPosterAudio autoPlay={false} />
         
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
           {/* Logo IPB con avatar glitchato */}
@@ -386,6 +356,7 @@ export default function PromptToPosterPage() {
     return (
       <main  className={`${styles.promptToPoster} min-h-screen relative overflow-hidden`}>
         <GlitchCanvas />
+        <PromptToPosterAudio autoPlay={true} />
         
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
                     {/* Player audio di Andromeda */}
@@ -440,6 +411,7 @@ export default function PromptToPosterPage() {
     return (
       <main  className={`${styles.promptToPoster} min-h-screen relative overflow-hidden`}>
         <GlitchCanvas />
+        <PromptToPosterAudio autoPlay={false} />
         
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
           {/* Animazione generazione */}
@@ -494,6 +466,7 @@ export default function PromptToPosterPage() {
     return (
       <main className={`${styles.promptToPoster} min-h-screen relative overflow-hidden`}>
         <GlitchCanvas />
+        <PromptToPosterAudio autoPlay={false} />
         
         <div className="relative z-10 min-h-screen px-4 py-8">
           <div className="max-w-7xl mx-auto">
@@ -627,6 +600,7 @@ export default function PromptToPosterPage() {
     return (
       <main  className={`${styles.promptToPoster} min-h-screen relative overflow-hidden`}>
         <GlitchCanvas />
+        <PromptToPosterAudio autoPlay={false} />
         
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
           {/* Messaggio finale */}

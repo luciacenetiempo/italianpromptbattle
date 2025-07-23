@@ -6,6 +6,7 @@ import ParticleCanvas from "@/app/components/ParticleCanvas";
 import GlitchCanvas from "@/app/components/GlitchCanvas";
 import AppPreloader from "@/app/components/AppPreloader";
 import ConsentBanner from "@/app/components/ConsentBanner";
+import AudioController from "@/app/components/AudioController";
 
 export const metadata: Metadata = {
   title: "Italian Prompt Battle – La sfida creativa italiana",
@@ -48,6 +49,7 @@ export default function RootLayout({
           <ParticleCanvas />
           <GlitchCanvas />
           {children}
+          <AudioController />
         </AppPreloader>
         <ConsentBanner />
       </body>
