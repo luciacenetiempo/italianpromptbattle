@@ -57,6 +57,7 @@ export default function LandingPage() {
           Il tuo browser non supporta il tag video.
         </video>
         <div className={styles.logoContainer}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src="/assets/SVG/logo-w.svg" 
             alt="Italian Prompt Battle" 

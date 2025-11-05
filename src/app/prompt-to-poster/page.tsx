@@ -116,6 +116,7 @@ export default function PromptToPosterPage() {
       const timeoutId = setTimeout(updatePoster, 1000);
       return () => clearTimeout(timeoutId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userSignature, selectedLayout, currentScreen, generatedImage, isBuildingPoster]);
 
   // Simulazione sintesi vocale durante la digitazione

@@ -116,8 +116,8 @@ export default function HomeClient() {
           </div>
         )}
         {isVisionVisible && <Target onOpenPanel={openPanel} />}
-        {isVisionVisible && <Place onOpenPanel={openPanel} />}
-        {isVisionVisible && <Location onOpenPanel={openPanel} />}
+        {isVisionVisible && <Place />}
+        {isVisionVisible && <Location />}
       </div>
 
       <FormPanel 

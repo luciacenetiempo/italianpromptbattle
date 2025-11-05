@@ -101,7 +101,13 @@ export async function POST(request: NextRequest) {
       // Se è un oggetto con proprietà url come stringa
       else if (output && typeof output === 'object' && 'url' in output) {
         const urlProp = (output as { url?: string | { href?: string } }).url;
-        imageUrl = typeof urlProp === 'string' ? urlProp : (urlProp && typeof urlProp === 'object' && 'href' in urlProp ? urlProp.href : String(urlProp));
+        if (typeof urlProp === 'string') {
+          imageUrl = urlProp;
+        } else if (urlProp && typeof urlProp === 'object' && 'href' in urlProp) {
+          imageUrl = urlProp.href ?? String(urlProp);
+        } else {
+          imageUrl = String(urlProp ?? '');
+        }
       }
       // Se è un File/Blob object
       else if (output && typeof output === 'object') {

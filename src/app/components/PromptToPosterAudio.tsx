@@ -72,6 +72,7 @@ const PromptToPosterAudio: React.FC<PromptToPosterAudioProps> = ({
     if (autoPlay && audioEnabled) {
       playRandomQuote();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoPlay, audioEnabled]);
 
   return (
