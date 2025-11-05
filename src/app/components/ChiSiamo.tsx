@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
+import Image from 'next/image';
 import styles from './ChiSiamo.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -46,10 +47,13 @@ const ChiSiamo: React.FC = () => {
         <div className={styles.profiles}>
           <div className={styles.profile}>
             <div className={styles.imageWrapper}>
-              <img 
+              <Image 
                 src="/assets/img/massimiliano-di-blasi.png" 
                 alt="Massimiliano Di Blasi" 
                 className={styles.profileImage}
+                width={500}
+                height={600}
+                style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
               />
             </div>
             <div className={styles.profileInfo}>
@@ -68,10 +72,13 @@ const ChiSiamo: React.FC = () => {
           </div>
           <div className={styles.profile}>
             <div className={styles.imageWrapper}>
-              <img 
+              <Image 
                 src="/assets/img/lucia-cenetiempo.png" 
                 alt="Lucia Cenetiempo" 
                 className={styles.profileImage}
+                width={500}
+                height={600}
+                style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
               />
             </div>
             <div className={styles.profileInfo}>

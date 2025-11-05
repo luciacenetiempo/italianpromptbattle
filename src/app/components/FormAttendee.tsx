@@ -15,7 +15,6 @@ interface FormAttendeeProps {
 
 const FormAttendee: React.FC<FormAttendeeProps> = ({
   listId = '1622397',
-  submit = 'Entra in wait list!',
   success = 'Perfetto! Sei stato aggiunto alla wait list. Ti contatteremo presto! 🚀',
   error = "Qualcosa è andato storto. Controlla l'indirizzo email.",
   inlineFields = false
@@ -73,7 +72,6 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     const name = formData.get('fields[name]') as string;
     const lastName = formData.get('fields[last_name]') as string;
     const email = formData.get('fields[email]') as string;
-    const aiWorksLink = formData.get('fields[ai_works_link]') as string;
     
     // Validazione completa di tutti i campi
     const errors: string[] = [];

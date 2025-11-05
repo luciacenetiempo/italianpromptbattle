@@ -166,7 +166,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ isOpen, onClose, formType }) => {
       // Resetta il progresso per la prossima apertura
       progressRef.current = 0;
     };
-  }, [isOpen, isMobileDevice, onClose]);
+  }, [isOpen, isMobileDevice, onClose, isExpanded]);
 
   // Reset quando il pannello si chiude
   useEffect(() => {
