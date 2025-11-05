@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef } from 'react';
+import Image from 'next/image';
 import styles from './Location.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -8,14 +9,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
-
 interface LocationProps {
-  onOpenPanel?: (formType: FormType) => void;
   onScrollToForm?: () => void;
 }
 
-const Location: React.FC<LocationProps> = ({ onOpenPanel, onScrollToForm }) => {
+const Location: React.FC<LocationProps> = ({ onScrollToForm }) => {
     const locationRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -46,19 +44,25 @@ const Location: React.FC<LocationProps> = ({ onOpenPanel, onScrollToForm }) => {
   return (
     <section className={styles.locationSection} ref={locationRef}>
       <div className={styles.left}>
-        <img 
+        <Image 
           src="/assets/img/venue.png" 
           alt="Talent Garden Calabiana" 
           className={styles.venueImage}
+          width={800}
+          height={600}
+          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
         />
       </div>
       <div className={styles.right}>
         <div className={styles.contentBlock} ref={contentRef}>
           <div className={styles.logoContainer}>
-            <img 
+            <Image 
               src="/assets/img/logo_tag.png" 
               alt="Talent Garden" 
               className={styles.logo}
+              width={250}
+              height={100}
+              style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
             />
           </div>
           <h2 className={styles.title}>TALENT GARDEN CALABIANA</h2>

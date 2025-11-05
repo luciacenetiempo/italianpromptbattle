@@ -232,7 +232,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     <form onSubmit={onSubmit} style={{ position: 'relative', minHeight: isSuccess ? '100vh' : 'auto' }}>
       <div className={`${styles.header} ${isSuccess ? styles.hidden : ''}`}>
         <div className={styles.col75}>
-          <h2>Partecipa all&apos;Italian Prompt Battle</h2>
+          <h2>Partecipa<br/>all&apos;Italian Prompt Battle</h2>
         </div>
         <div className={styles.col35}>
           <CanvasHeartCube size={250} />

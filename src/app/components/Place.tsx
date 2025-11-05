@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import Image from 'next/image';
 import styles from './Place.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -7,14 +8,11 @@ import { useDevice } from './DeviceContext';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
-
 interface PlaceProps {
-  onOpenPanel?: (formType: FormType) => void;
   onScrollToForm?: () => void;
 }
 
-const Place: React.FC<PlaceProps> = ({ onOpenPanel, onScrollToForm }) => {
+const Place: React.FC<PlaceProps> = ({ onScrollToForm }) => {
   const placeRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   
@@ -54,10 +52,8 @@ const Place: React.FC<PlaceProps> = ({ onOpenPanel, onScrollToForm }) => {
         loop
         muted
         playsInline
-        poster="/video/ipb-background-2.jpg"
         key={isMobileDevice ? 'mobile' : 'desktop'}
       >
-        <source src="/video/ipb-milano.webm" type="video/webm" />
         <source src="/video/ipb-milano.mp4" type="video/mp4" />
         Il tuo browser non supporta il tag video.
       </video>
@@ -67,10 +63,13 @@ const Place: React.FC<PlaceProps> = ({ onOpenPanel, onScrollToForm }) => {
           MILANO<br/>04 DICEMBRE<br/>2025
           </h2>
           <div className={styles.venueInfo}>
-            <img 
+            <Image 
               src="/assets/img/logo_tag.png" 
               alt="Talent Garden Calabiana" 
               className={styles.logo}
+              width={220}
+              height={100}
+              style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
             />
             <p className={styles.description}>
             Il luogo è stato scelto.<br/>Dove la luce incontra la creatività,<br/>lì nascerà la prima Italian Prompt Battle.

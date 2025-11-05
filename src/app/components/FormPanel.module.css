@@ -237,6 +237,12 @@
   margin-top: 6vh;
 }
 
+.header h2 {
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 25px;
+}
 @media (max-width: 900px) {
   .content {
     padding: 4vh;

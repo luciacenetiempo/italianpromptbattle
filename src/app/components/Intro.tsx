@@ -66,7 +66,7 @@ const Intro: React.FC<IntroProps> = ({ onSpeakingEnd, hasSpeakingVideoPlayed }) 
         }
       }, 1000);
     }
-  }, [isVideoReady, hasStartedPlaying, videoMode]);
+  }, [isVideoReady, hasStartedPlaying]);
 
   // Gestione degli eventi del video
   useEffect(() => {
