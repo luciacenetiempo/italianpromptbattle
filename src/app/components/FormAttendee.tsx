@@ -22,6 +22,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
 }) => {
   const [isSuccess, setSuccess] = useState(false);
   const [isError, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
@@ -29,6 +30,12 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
   const [isSfidante, setIsSfidante] = useState(false);
   const [isPubblico, setIsPubblico] = useState(false);
   const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [formValues, setFormValues] = useState({
+    name: '',
+    lastName: '',
+    email: '',
+    aiWorksLink: ''
+  });
 
   // Controlla se l'utente è già iscritto al caricamento del componente
   useEffect(() => {
@@ -64,6 +71,57 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     
     const formData = new FormData(event.target as HTMLFormElement);
     const name = formData.get('fields[name]') as string;
+    const lastName = formData.get('fields[last_name]') as string;
+    const email = formData.get('fields[email]') as string;
+    const aiWorksLink = formData.get('fields[ai_works_link]') as string;
+    
+    // Validazione completa di tutti i campi
+    const errors: string[] = [];
+    
+    // Validazione checkbox
+    if (!isSfidante && !isPubblico) {
+      errors.push('Seleziona almeno un modo di partecipazione (Come sfidante o Come pubblico)');
+    }
+    
+    // Validazione nome
+    if (!name || name.trim() === '') {
+      errors.push('Il nome è obbligatorio');
+    }
+    
+    // Validazione cognome
+    if (!lastName || lastName.trim() === '') {
+      errors.push('Il cognome è obbligatorio');
+    }
+    
+    // Validazione email
+    if (!email || email.trim() === '') {
+      errors.push('L\'email è obbligatoria');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Inserisci un indirizzo email valido');
+    }
+    
+    // Validazione privacy consent
+    if (!privacyConsent) {
+      errors.push('Devi accettare il trattamento dei dati personali');
+    }
+    
+    // Se ci sono errori, mostrali e interrompi l'invio
+    if (errors.length > 0) {
+      setError(true);
+      setErrorMessage(errors.join('. '));
+      setLoading(false);
+      setTimeout(() => {
+        const errorElement = document.querySelector('[data-error-message]');
+        if (errorElement) {
+          errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return;
+    }
+    
+    // Reset del messaggio di errore se non ci sono errori
+    setErrorMessage('');
+    
     setUserName(name);
     
     // Aggiungi i valori delle checkbox al formData
@@ -80,7 +138,16 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
         method: 'POST',
         body: formData,
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
+      
+      // Log per debugging
+      console.log('MailerLite response:', data);
+      
       if (data.success) {
         // Tracking Google Analytics - Successo form
         if (typeof window !== 'undefined' && window.gtag) {
@@ -98,10 +165,30 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       } else {
         setSuccess(false);
         setError(true);
+        setErrorMessage(error);
+        // Log dell'errore per debugging
+        console.error('MailerLite error:', data);
+        // Scroll al messaggio di errore
+        setTimeout(() => {
+          const errorElement = document.querySelector('[data-error-message]');
+          if (errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       }
-    } catch {
+    } catch (err) {
       setSuccess(false);
       setError(true);
+      setErrorMessage(error);
+      // Log dell'errore per debugging
+      console.error('Form submission error:', err);
+      // Scroll al messaggio di errore
+      setTimeout(() => {
+        const errorElement = document.querySelector('[data-error-message]');
+        if (errorElement) {
+          errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     } finally {
       setLoading(false);
     }
@@ -127,9 +214,25 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     }
   };
 
+  // Verifica se almeno un campo è stato compilato
+  const isFormPartiallyFilled = () => {
+    return !!(
+      (formValues.name && formValues.name.trim() !== '') ||
+      (formValues.lastName && formValues.lastName.trim() !== '') ||
+      (formValues.email && formValues.email.trim() !== '') ||
+      (formValues.aiWorksLink && formValues.aiWorksLink.trim() !== '') ||
+      isSfidante ||
+      isPubblico ||
+      privacyConsent
+    );
+  };
+
+  // Calcola se il bottone deve essere disabilitato
+  const isButtonDisabled = loading || !privacyConsent || !isFormPartiallyFilled();
+
   return (
-    <form onSubmit={onSubmit}>
-      <div className={`${styles.header} ${isSuccess ? styles.success : ''}`}>
+    <form onSubmit={onSubmit} style={{ position: 'relative', minHeight: isSuccess ? '100vh' : 'auto' }}>
+      <div className={`${styles.header} ${isSuccess ? styles.hidden : ''}`}>
         <div className={styles.col75}>
           <h2>Partecipa all&apos;Italian Prompt Battle</h2>
         </div>
@@ -139,19 +242,33 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       </div>
       
       {isSuccess && (
-        <>
-        <div 
-          className={`${styles.successMessage} ${showSuccessMessage ? styles.visible : ''}`}
-          dangerouslySetInnerHTML={{
-            __html: isAlreadySubscribed ? getPersonalizedAlreadySubscribedMessage() : getPersonalizedSuccessMessage()
-          }}
-        />
-        <CanvasHeartCube size={250} />
-        </>
+        <div style={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)',
+          width: '100%',
+          maxWidth: '90%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          zIndex: 10
+        }}>
+          <div 
+            className={`${styles.successMessage} ${showSuccessMessage ? styles.visible : ''}`}
+            style={{ position: 'relative', top: 'auto', left: 'auto', transform: showSuccessMessage ? 'translateY(0)' : 'translateY(20px)' }}
+            dangerouslySetInnerHTML={{
+              __html: isAlreadySubscribed ? getPersonalizedAlreadySubscribedMessage() : getPersonalizedSuccessMessage()
+            }}
+          />
+          <CanvasHeartCube size={250} />
+        </div>
       )}
       
-      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`} style={{ marginBottom: 0 }}>
+        <div style={{ display: 'flex', gap: '15px', marginBottom: 0, flexWrap: 'wrap' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '24px', cursor: 'pointer', padding: '8px 0' }}>
             <input
               type="checkbox"
@@ -186,24 +303,28 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       </div>
       
       {/* Campi nascosti per le checkbox */}
-      <InputField
-        name="fields[partecipante]"
-        type="text"
-        placeholder=''
-        required={false}
-        disabled={loading}
-        value={isSfidante ? 'true' : ''}
-        style={{ display: 'none' }}
-      />
-      <InputField
-        name="fields[pubblico]"
-        type="text"
-        placeholder=''
-        required={false}
-        disabled={loading}
-        value={isPubblico ? 'true' : ''}
-        style={{ display: 'none' }}
-      />
+      {!isSuccess && (
+        <>
+          <InputField
+            name="fields[partecipante]"
+            type="text"
+            placeholder=''
+            required={false}
+            disabled={loading}
+            value={isSfidante ? 'true' : ''}
+            style={{ display: 'none' }}
+          />
+          <InputField
+            name="fields[pubblico]"
+            type="text"
+            placeholder=''
+            required={false}
+            disabled={loading}
+            value={isPubblico ? 'true' : ''}
+            style={{ display: 'none' }}
+          />
+        </>
+      )}
       
       {inlineFields ? (
         <div className={`${styles.inputGroupRow} ${isSuccess ? styles.hidden : ''}`}>
@@ -214,6 +335,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
               placeholder='Inserisci il tuo nome'
               required
               disabled={loading}
+              onChange={(e) => setFormValues(prev => ({ ...prev, name: e.target.value }))}
             /> 
             <div className={styles.helperText}>O come preferisci che ti chiamiamo...</div>
           </div>
@@ -224,8 +346,9 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
               placeholder='Inserisci il tuo cognome'
               required
               disabled={loading}
+              onChange={(e) => setFormValues(prev => ({ ...prev, lastName: e.target.value }))}
             /> 
-            <div className={styles.helperText}>Si ci serve per acreditarti.</div>
+            <div className={styles.helperText}>Si ci serve per accreditarti.</div>
           </div>
         </div>
       ) : (
@@ -237,6 +360,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
               placeholder='Inserisci il tuo nome'
               required
               disabled={loading}
+              onChange={(e) => setFormValues(prev => ({ ...prev, name: e.target.value }))}
             /> 
             <div className={styles.helperText}>O come preferisci che ti chiamiamo...</div>
           </div>      
@@ -247,6 +371,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
               placeholder='Inserisci il tuo cognome'
               required
               disabled={loading}
+              onChange={(e) => setFormValues(prev => ({ ...prev, lastName: e.target.value }))}
             /> 
             <div className={styles.helperText}>Si ci serve per acreditarti.</div>
           </div>
@@ -258,8 +383,9 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
             name="fields[ai_works_link]"
             type="url"
             placeholder='Link ai tuoi lavori AI'
-            required={isSfidante}
+            required={false}
             disabled={loading}
+            onChange={(e) => setFormValues(prev => ({ ...prev, aiWorksLink: e.target.value }))}
             style={{
               borderBottom: '3px solid #b6ff6c',
               borderLeft: '3px solid #b6ff6c',
@@ -279,6 +405,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
           placeholder='Dove possiamo contattarti?'
           required
           disabled={loading}
+          onChange={(e) => setFormValues(prev => ({ ...prev, email: e.target.value }))}
         />    
         <div className={styles.helperText}>Inserisci il tuo miglior indirizzo email.</div>
       </div>
@@ -302,7 +429,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
             }}
           />
           <span style={{ fontSize: '12px', lineHeight: '1.3', color: '#1a1a1a' }}>
-            Acconsento al trattamento dei miei dati personali da parte di Lucia Cenetiempo (The Prompt Master) e Massimiliano Di Blasi, in qualità di contitolari del trattamento per il progetto Italian Prompt Battle, e da parte di Talent Garden S.p.A., in qualità di titolare autonomo del trattamento, per finalità di gestione della mia partecipazione all&apos;evento, nonché per l&apos;invio di comunicazioni promozionali e commerciali relative a prodotti, servizi ed eventi di loro interesse, tramite email o altri mezzi di comunicazione elettronica.
+            Acconsento al trattamento dei miei dati personali da parte di Lucia Cenetiempo e Massimiliano Di Blasi, in qualità di contitolari del trattamento per Italian Prompt Battle, e da parte di Talent Garden S.p.A., in qualità di titolare autonomo, per finalità di gestione della mia partecipazione all&apos;evento, nonché per l&apos;invio di comunicazioni promozionali e commerciali, tramite email o altri mezzi di comunicazione elettronica.
             <br /><br />
             Dichiaro di aver letto e compreso le rispettive informative privacy, disponibili ai seguenti link:
             <br />
@@ -318,7 +445,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <FormButton 
           type="submit" 
-          disabled={loading || !privacyConsent} 
+          disabled={isButtonDisabled} 
           className="revert" 
           trackingLabel="form_registrazione_partecipanti"
           hideArrow={true}
@@ -331,15 +458,33 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
             letterSpacing: '0.03em',
             lineHeight: '1.1',
             justifyContent: 'center',
-            display: 'flex'
+            display: 'flex',
+            opacity: isButtonDisabled ? 0.5 : 1,
+            cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
+            pointerEvents: isButtonDisabled ? 'none' : 'auto'
           }}
         >
           {getButtonText()}
         </FormButton>
       </div>
-      {isError ? (
-        <div style={{ color: '#c62828', marginTop: 18, textAlign: 'center', fontWeight: 500 }}>{error}</div>
-      ) : null}
+      {isError && !isSuccess && (
+        <div 
+          data-error-message
+          style={{ 
+            color: '#c62828', 
+            marginTop: '20px', 
+            textAlign: 'center', 
+            fontWeight: 600,
+            fontSize: '1rem',
+            padding: '15px',
+            backgroundColor: '#ffebee',
+            borderRadius: '8px',
+            border: '1px solid #c62828'
+          }}
+        >
+          {errorMessage || error}
+        </div>
+      )}
     </form>
   );
 };

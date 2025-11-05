@@ -47,3 +47,17 @@
 .revert .ctaArrow{
     background-color: #8e81d5;
 }
+
+.ctaEmail:disabled,
+.revert:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #b6ff6c !important;
+}
+
+.ctaEmail:disabled:hover,
+.revert:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,0.2) !important;
+}

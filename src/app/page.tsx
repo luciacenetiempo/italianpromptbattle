@@ -79,10 +79,10 @@ export default function Home() {
         </div>
       </div>
       <Vision noSticky={true} />
-      <AttendeeSection ref={formSectionRef} />
       <Place onScrollToForm={scrollToForm} />
       <Location onScrollToForm={scrollToForm} />
       <ChiSiamo />
+      <AttendeeSection ref={formSectionRef} />
     </>
   );
 }

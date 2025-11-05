@@ -15,11 +15,11 @@ const AudioController: React.FC<AudioControllerProps> = ({ className }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Avvia automaticamente la musica quando l'audio è abilitato
-  // Nota: isPlaying non è nelle dipendenze per evitare loop infiniti
   useEffect(() => {
     if (audioEnabled && !isPlaying) {
       setIsPlaying(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioEnabled]);
 
   // Gestisce la riproduzione audio

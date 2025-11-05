@@ -202,10 +202,10 @@
 }
 
 .inputGroup.hidden,
-.buttonWrapper.hidden {
-  opacity: 0;
-  transform: translateY(-20px);
-  pointer-events: none;
+.inputGroupRow.hidden,
+.buttonWrapper.hidden,
+.header.hidden {
+  display: none !important;
 }
 
 .header {
@@ -225,7 +225,7 @@
   font-size: clamp(2rem, 3vw, 3.5rem);
   font-weight: 600;
   line-height: 1.2;
-  margin-top: 50px;
+  width: 100%;
 }
 
 .successMessage.visible {
@@ -275,7 +275,18 @@
     font-size: 0.8rem;
   }
   .buttonWrapper{
-    margin-top: 6vh;
+    margin-top: 0;
+  }
+
+  /* Stili per il bottone su mobile */
+  .buttonWrapper button {
+    padding: 20px 64px !important;
+  }
+
+  /* Checkbox più piccole su mobile */
+  .inputGroup input[type="checkbox"] {
+    width: 35px !important;
+    height: 35px !important;
   }
 }
 
