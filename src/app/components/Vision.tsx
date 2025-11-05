@@ -30,7 +30,11 @@ const MarqueeRow = ({ keywords, direction }: { keywords: string[], direction: 'l
   </div>
 );
 
-const Vision: React.FC = () => {
+interface VisionProps {
+  noSticky?: boolean;
+}
+
+const Vision: React.FC<VisionProps> = ({ noSticky = false }) => {
   const visionRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
@@ -59,7 +63,7 @@ const Vision: React.FC = () => {
   }, { scope: visionRef });
 
   return (
-    <section className={styles.visionContainer} ref={visionRef}>
+    <section className={`${styles.visionContainer} ${noSticky ? styles.noSticky : ''}`} ref={visionRef}>
       <div className={styles.textContainer}>
         <div className={styles.leftColumn}>
           <h2 className={styles.title}>ITALIAN<br/>PROMPT<br/>BATTLE</h2>

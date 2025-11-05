@@ -10,13 +10,15 @@ interface FormAttendeeProps {
   submit?: string;
   success?: string;
   error?: string;
+  inlineFields?: boolean;
 }
 
 const FormAttendee: React.FC<FormAttendeeProps> = ({
   listId = '1622397',
   submit = 'Entra in wait list!',
   success = 'Perfetto! Sei stato aggiunto alla wait list. Ti contatteremo presto! 🚀',
-  error = "Qualcosa è andato storto. Controlla l'indirizzo email."
+  error = "Qualcosa è andato storto. Controlla l'indirizzo email.",
+  inlineFields = false
 }) => {
   const [isSuccess, setSuccess] = useState(false);
   const [isError, setError] = useState(false);
@@ -26,6 +28,7 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
   const [userName, setUserName] = useState('');
   const [isSfidante, setIsSfidante] = useState(false);
   const [isPubblico, setIsPubblico] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   // Controlla se l'utente è già iscritto al caricamento del componente
   useEffect(() => {
@@ -115,11 +118,20 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
     return `Ciao ${userName}!<br/>Sei già nella wait list!<br/>Ti contatteremo presto per aggiornamenti sulla battle.`;
   };
 
+  // Determina il testo del bottone in base alla selezione
+  const getButtonText = () => {
+    if (isSfidante) {
+      return 'candidati ora!';
+    } else {
+      return 'vieni all\'evento!';
+    }
+  };
+
   return (
     <form onSubmit={onSubmit}>
       <div className={`${styles.header} ${isSuccess ? styles.success : ''}`}>
         <div className={styles.col75}>
-          <h2>Hai coraggio.<br/>Sei ad un passo dalla rivoluzione<br/>Partecipa alla battle!</h2>
+          <h2>Partecipa all&apos;Italian Prompt Battle</h2>
         </div>
         <div className={styles.col35}>
           <CanvasHeartCube size={250} />
@@ -139,27 +151,36 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
       )}
       
       <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
-        <h3 style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>Come vuoi partecipare all&apos;evento?</h3>
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '24px', cursor: 'pointer', padding: '8px 0' }}>
             <input
               type="checkbox"
               checked={isSfidante}
               onChange={(e) => setIsSfidante(e.target.checked)}
               disabled={loading}
-              style={{ width: '18px', height: '18px' }}
+              style={{ 
+                width: '48px', 
+                height: '48px', 
+                cursor: 'pointer',
+                accentColor: '#dc6f5a'
+              }}
             />
-            <span style={{ fontSize: '16px' }}>Come sfidante</span>
+            <span style={{ fontSize: '21.6px', fontWeight: '600' }}>Come sfidante</span>
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '24px', cursor: 'pointer', padding: '8px 0' }}>
             <input
               type="checkbox"
               checked={isPubblico}
               onChange={(e) => setIsPubblico(e.target.checked)}
               disabled={loading}
-              style={{ width: '18px', height: '18px' }}
+              style={{ 
+                width: '48px', 
+                height: '48px', 
+                cursor: 'pointer',
+                accentColor: '#dc6f5a'
+              }}
             />
-            <span style={{ fontSize: '16px' }}>Come pubblico</span>
+            <span style={{ fontSize: '21.6px', fontWeight: '600' }}>Come pubblico</span>
           </label>
         </div>
       </div>
@@ -184,26 +205,73 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
         style={{ display: 'none' }}
       />
       
-      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
-        <InputField
-          name="fields[name]"
-          type="text"
-          placeholder='Inserisci il tuo nome'
-          required
-          disabled={loading}
-        /> 
-        <div className={styles.helperText}>O come preferisci che ti chiamiamo...</div>
-      </div>      
-      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
-        <InputField
-          name="fields[last_name]"
-          type="text"
-          placeholder='Inserisci il tuo cognome'
-          required
-          disabled={loading}
-        /> 
-        <div className={styles.helperText}>Si ci serve per acreditarti.</div>
-      </div>                
+      {inlineFields ? (
+        <div className={`${styles.inputGroupRow} ${isSuccess ? styles.hidden : ''}`}>
+          <div className={styles.inputGroupCol}>
+            <InputField
+              name="fields[name]"
+              type="text"
+              placeholder='Inserisci il tuo nome'
+              required
+              disabled={loading}
+            /> 
+            <div className={styles.helperText}>O come preferisci che ti chiamiamo...</div>
+          </div>
+          <div className={styles.inputGroupCol}>
+            <InputField
+              name="fields[last_name]"
+              type="text"
+              placeholder='Inserisci il tuo cognome'
+              required
+              disabled={loading}
+            /> 
+            <div className={styles.helperText}>Si ci serve per acreditarti.</div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
+            <InputField
+              name="fields[name]"
+              type="text"
+              placeholder='Inserisci il tuo nome'
+              required
+              disabled={loading}
+            /> 
+            <div className={styles.helperText}>O come preferisci che ti chiamiamo...</div>
+          </div>      
+          <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
+            <InputField
+              name="fields[last_name]"
+              type="text"
+              placeholder='Inserisci il tuo cognome'
+              required
+              disabled={loading}
+            /> 
+            <div className={styles.helperText}>Si ci serve per acreditarti.</div>
+          </div>
+        </>
+      )}
+      {isSfidante && (
+        <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
+          <InputField
+            name="fields[ai_works_link]"
+            type="url"
+            placeholder='Link ai tuoi lavori AI'
+            required={isSfidante}
+            disabled={loading}
+            style={{
+              borderBottom: '3px solid #b6ff6c',
+              borderLeft: '3px solid #b6ff6c',
+              borderRight: '3px solid #b6ff6c',
+              borderTop: '3px solid #b6ff6c',
+              borderRadius: '4px',
+              padding: '22px 30px'
+            }}
+          />    
+          <div className={styles.helperText}>Condividi il link ai tuoi migliori lavori con l&apos;AI.</div>
+        </div>
+      )}
       <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>        
         <InputField
           name="fields[email]"
@@ -213,11 +281,60 @@ const FormAttendee: React.FC<FormAttendeeProps> = ({
           disabled={loading}
         />    
         <div className={styles.helperText}>Inserisci il tuo miglior indirizzo email.</div>
-      </div>       
+      </div>
       
-      <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`}>
-        <FormButton type="submit" disabled={loading} className="revert" trackingLabel="form_registrazione_partecipanti">
-          {submit}
+      <div className={`${styles.inputGroup} ${isSuccess ? styles.hidden : ''}`}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', padding: '12px 0' }}>
+          <input
+            type="checkbox"
+            checked={privacyConsent}
+            onChange={(e) => setPrivacyConsent(e.target.checked)}
+            disabled={loading}
+            required
+            style={{ 
+              width: '24px', 
+              height: '24px', 
+              cursor: 'pointer',
+              accentColor: '#dc6f5a',
+              marginTop: '2px',
+              flexShrink: 0,
+              transform: 'scale(1.2)'
+            }}
+          />
+          <span style={{ fontSize: '12px', lineHeight: '1.3', color: '#1a1a1a' }}>
+            Acconsento al trattamento dei miei dati personali da parte di Lucia Cenetiempo (The Prompt Master) e Massimiliano Di Blasi, in qualità di contitolari del trattamento per il progetto Italian Prompt Battle, e da parte di Talent Garden S.p.A., in qualità di titolare autonomo del trattamento, per finalità di gestione della mia partecipazione all&apos;evento, nonché per l&apos;invio di comunicazioni promozionali e commerciali relative a prodotti, servizi ed eventi di loro interesse, tramite email o altri mezzi di comunicazione elettronica.
+            <br /><br />
+            Dichiaro di aver letto e compreso le rispettive informative privacy, disponibili ai seguenti link:
+            <br />
+            {'– '}
+            <a href="/informativa-ipb" target="_blank" rel="noopener noreferrer" style={{ color: '#dc6f5a', textDecoration: 'underline' }}>Informativa Italian Prompt Battle</a>
+            <br />
+            {'– '}
+            <a href="https://knowledge.talentgarden.com/it/kb/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: '#dc6f5a', textDecoration: 'underline' }}>Informativa Talent Garden S.p.A.</a>
+          </span>
+        </label>
+      </div>
+      
+      <div className={`${styles.buttonWrapper} ${isSuccess ? styles.hidden : ''}`} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <FormButton 
+          type="submit" 
+          disabled={loading || !privacyConsent} 
+          className="revert" 
+          trackingLabel="form_registrazione_partecipanti"
+          hideArrow={true}
+          style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            padding: '32px 64px',
+            width: '50%',
+            maxWidth: '50%',
+            letterSpacing: '0.03em',
+            lineHeight: '1.1',
+            justifyContent: 'center',
+            display: 'flex'
+          }}
+        >
+          {getButtonText()}
         </FormButton>
       </div>
       {isError ? (

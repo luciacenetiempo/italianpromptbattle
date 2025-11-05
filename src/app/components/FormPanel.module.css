@@ -174,7 +174,7 @@
   /* border-radius: 100px; */
   width: 100%;
   padding: 22px 30px;
-  font-size: 1.7rem;
+  font-size: 1.3rem;
 }
 
 .formInput::placeholder {
@@ -245,6 +245,12 @@
     font-size: 1.5rem;
     margin-bottom: 0;
   }
+  .header h2 {
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 25px;
+  }
   .col35 canvas{
     width: 100px!important;
     height: 100px!important;
@@ -260,7 +266,7 @@
   }
   .formInput {
     padding: 1vh 2vh;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     margin-top: 2vh;
   }
   .helperText {
@@ -295,7 +301,7 @@
   
   .formInput {
     padding: 12px 15px;
-    font-size: 1rem;
+    font-size: 1.3rem;
   }
   
   .helperText {

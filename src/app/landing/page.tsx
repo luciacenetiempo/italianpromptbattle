@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import styles from './HomePage.module.css';
-import Vision from './components/Vision';
-import AttendeeSection from './components/AttendeeSection';
-import Place from './components/Place';
-import Location from './components/Location';
-import ChiSiamo from './components/ChiSiamo';
+import styles from './LandingPage.module.css';
+import Vision from '../components/Vision';
+import AttendeeSection from '../components/AttendeeSection';
+import Place from '../components/Place';
+import Location from '../components/Location';
 
-export default function Home() {
+export default function LandingPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const formSectionRef = useRef<HTMLElement | null>(null);
 
@@ -82,7 +81,7 @@ export default function Home() {
       <AttendeeSection ref={formSectionRef} />
       <Place onScrollToForm={scrollToForm} />
       <Location onScrollToForm={scrollToForm} />
-      <ChiSiamo />
     </>
   );
 }
+

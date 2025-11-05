@@ -6,6 +6,7 @@ interface FormButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   style?: React.CSSProperties;
   className?: string;
   trackingLabel?: string;
+  hideArrow?: boolean;
 }
 
 const FormButton: React.FC<FormButtonProps> = ({ 
@@ -13,6 +14,7 @@ const FormButton: React.FC<FormButtonProps> = ({
   style, 
   className = '', 
   trackingLabel,
+  hideArrow = false,
   onClick,
   ...rest 
 }) => {
@@ -39,13 +41,15 @@ const FormButton: React.FC<FormButtonProps> = ({
       onClick={handleClick}
       {...rest}
     >
-      <span>↗ {children}</span>
-      <span className={ctaStyles.ctaArrow}>
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 12H16" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </span>
+      <span>{hideArrow ? children : `↗ ${children}`}</span>
+      {!hideArrow && (
+        <span className={ctaStyles.ctaArrow}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 12H16" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
+      )}
     </button>
   );
 };

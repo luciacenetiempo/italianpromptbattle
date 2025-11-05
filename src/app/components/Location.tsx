@@ -5,8 +5,6 @@ import styles from './Location.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ctaStyles from './Cta.module.css';
-import CanvasHeartCube from './CanvasHeartCube';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -14,9 +12,10 @@ type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
 
 interface LocationProps {
   onOpenPanel?: (formType: FormType) => void;
+  onScrollToForm?: () => void;
 }
 
-const Location: React.FC<LocationProps> = ({ onOpenPanel }) => {
+const Location: React.FC<LocationProps> = ({ onOpenPanel, onScrollToForm }) => {
     const locationRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -47,40 +46,43 @@ const Location: React.FC<LocationProps> = ({ onOpenPanel }) => {
   return (
     <section className={styles.locationSection} ref={locationRef}>
       <div className={styles.left}>
-        <CanvasHeartCube size={250} />
+        <img 
+          src="/assets/img/venue.png" 
+          alt="Talent Garden Calabiana" 
+          className={styles.venueImage}
+        />
       </div>
       <div className={styles.right}>
-        <div className={styles.textBlock} ref={contentRef}>
-          <span className={styles.firstLine}>hai una location?</span>
-          <div className={styles.secondLineWrapper}>
-            <button 
-              className={ctaStyles.ctaEmail}
-              onClick={() => {
-                // Tracking Google Analytics
-                if (typeof window !== 'undefined' && window.gtag) {
-                  window.gtag('event', 'click_iscriviti', {
-                    'event_category': 'interazione',
-                    'event_label': 'cta_location_sponsorship',
-                    'value': 1
-                  });
-                }
-                onOpenPanel?.('sponsorship');
-              }}
-            >
-              <span>Scrivici!</span>
-              <span className={ctaStyles.ctaArrow}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8 12H16" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-            </button>
-            <span className={styles.secondLineText}>ospita la prima</span>
+        <div className={styles.contentBlock} ref={contentRef}>
+          <div className={styles.logoContainer}>
+            <img 
+              src="/assets/img/logo_tag.png" 
+              alt="Talent Garden" 
+              className={styles.logo}
+            />
           </div>
-          <div className={styles.thirdLineWrapper}>
-            <span className={styles.thirdLineText}>prompt battle</span>
-            <span className={styles.detailsText}>entrerai a<br/>far parte<br/>della storia</span>
+          <h2 className={styles.title}>TALENT GARDEN CALABIANA</h2>
+          <p className={styles.address}>Via Arcivescovo Calabiana, 6, 20139 Milano MI</p>
+          <div className={styles.message}>
+            <p className={styles.messageLine}>ABBIAMO VARCATO LA SOGLIA.</p>
+            <p className={styles.messageLine}>LA GREEN HOUSE DEL TALENT GARDEN</p>
+            <p className={styles.messageLine}>È DIVENTATA LA NOSTRA CASA.</p>
           </div>
+          <button 
+            className={styles.ctaButton}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.gtag) {
+                window.gtag('event', 'click_iscriviti', {
+                  'event_category': 'interazione',
+                  'event_label': 'cta_location_form',
+                  'value': 1
+                });
+              }
+              onScrollToForm?.();
+            }}
+          >
+            Partecipa all&apos;evento
+          </button>
         </div>
       </div>
     </section>

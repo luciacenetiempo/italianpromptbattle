@@ -9,6 +9,13 @@
   position: sticky; /* Lo rende "ancorabile" */
   top: 0; /* Si ancora alla parte superiore della viewport */
   overflow: hidden; /* Nasconde il testo che scorre fuori */
+  z-index: 1;
+}
+
+.visionContainer.noSticky {
+  position: static;
+  height: auto;
+  min-height: 100vh;
 }
 
 .textContainer {

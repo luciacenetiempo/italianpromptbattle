@@ -25,7 +25,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { prompt } = await request.json();
+    let requestBody;
+    try {
+      requestBody = await request.json();
+    } catch (jsonError) {
+      console.error('Error parsing request body:', jsonError);
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+
+    const { prompt } = requestBody;
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json( 
@@ -36,44 +47,89 @@ export async function POST(request: NextRequest) {
 
     console.log('Generating poster for prompt:', prompt);
 
-    const result = await replicate.run(
-      "luciacenetiempo/prompt-to-poster:dcd1e6e1dbab869ba5ae6df74feced87d07a82ac9539d196a6d7c97d7834bbbb",
-      {
-        input: {
-          model: "dev",
-          go_fast: true,
-          lora_scale: 1.5,
-          megapixels: "1",
-          num_outputs: 1,
-          aspect_ratio: "3:4",
-          output_format: "png",
-          guidance_scale: 3.5,
-          output_quality: 100,
-          prompt_strength: 0.8,
-          extra_lora_scale: 1,
-          num_inference_steps: 28,
-          prompt: prompt + ' , flat black background, in style IPBSTYLE'
+    let result;
+    try {
+      result = await replicate.run(
+        "luciacenetiempo/prompt-to-poster:dcd1e6e1dbab869ba5ae6df74feced87d07a82ac9539d196a6d7c97d7834bbbb",
+        {
+          input: {
+            model: "dev",
+            go_fast: true,
+            lora_scale: 1.5,
+            megapixels: "1",
+            num_outputs: 1,
+            aspect_ratio: "3:4",
+            output_format: "png",
+            guidance_scale: 3.5,
+            output_quality: 100,
+            prompt_strength: 0.8,
+            extra_lora_scale: 1,
+            num_inference_steps: 28,
+            prompt: prompt + ' , flat black background, in style IPBSTYLE'
+          }
         }
+      );
+    } catch (replicateError) {
+      console.error('Replicate API error:', replicateError);
+      if (replicateError instanceof Error) {
+        throw new Error(`Replicate API error: ${replicateError.message}`);
       }
-    );
+      throw new Error('Replicate API error: Unknown error');
+    }
     
     console.log('Raw result from Replicate:', result);
     console.log('Result type:', typeof result);
     console.log('Result constructor:', result?.constructor?.name);
 
-    // Replicate restituisce un array con oggetti file
-    if (!result || !Array.isArray(result) || result.length === 0) {
-      throw new Error('No valid output received from Replicate');
+    // Replicate può restituire diversi formati a seconda del modello
+    let imageUrl: string;
+
+    if (Array.isArray(result) && result.length > 0) {
+      const output = result[0];
+      console.log('Output from Replicate (array):', output);
+      console.log('Output type:', typeof output);
+
+      // Se è già una stringa URL
+      if (typeof output === 'string') {
+        imageUrl = output;
+      }
+      // Se è un oggetto con metodo url()
+      else if (output && typeof output.url === 'function') {
+        const urlObj = output.url();
+        imageUrl = urlObj?.href || urlObj?.toString() || String(output);
+      }
+      // Se è un oggetto con proprietà url come stringa
+      else if (output && typeof output === 'object' && 'url' in output) {
+        const urlProp = (output as any).url;
+        imageUrl = typeof urlProp === 'string' ? urlProp : urlProp?.href || String(urlProp);
+      }
+      // Se è un File/Blob object
+      else if (output && typeof output === 'object') {
+        imageUrl = String(output);
+      }
+      else {
+        throw new Error('Invalid output format from Replicate: ' + JSON.stringify(output));
+      }
+    }
+    // Se il risultato è direttamente una stringa URL
+    else if (typeof result === 'string') {
+      imageUrl = result;
+    }
+    else {
+      throw new Error('No valid output received from Replicate. Result: ' + JSON.stringify(result));
     }
 
-    const output = result[0];
-    console.log('Output from Replicate:', output);
-    console.log('Output type:', typeof output);
-    console.log('Output has url method:', typeof output?.url === 'function');
-
-    // Ottieni l'URL dell'immagine
-    const imageUrl = output.url().href;
     console.log('Image URL from Replicate:', imageUrl);
+
+    // Valida che imageUrl sia un URL valido
+    if (!imageUrl || typeof imageUrl !== 'string') {
+      throw new Error('Invalid image URL received from Replicate');
+    }
+
+    // Verifica che sia un URL valido (inizia con http:// o https://)
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+      throw new Error(`Invalid URL format: ${imageUrl}`);
+    }
 
     // In produzione (Vercel), non possiamo scrivere file
     // Restituiamo direttamente l'URL di Replicate
@@ -87,11 +143,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error generating poster:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // Dettagli più informativi per il debug
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorDetails = {
+      message: errorMessage,
+      type: error instanceof Error ? error.constructor.name : typeof error,
+      ...(process.env.NODE_ENV === 'development' && {
+        stack: error instanceof Error ? error.stack : undefined
+      })
+    };
     
     return NextResponse.json(
       { 
         error: 'Failed to generate poster',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: errorMessage,
+        ...(process.env.NODE_ENV === 'development' && errorDetails)
       },
       { status: 500 }
     );

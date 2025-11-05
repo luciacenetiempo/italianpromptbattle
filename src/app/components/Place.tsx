@@ -3,7 +3,6 @@ import styles from './Place.module.css';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ctaStyles from './Cta.module.css';
 import { useDevice } from './DeviceContext';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -12,9 +11,10 @@ type FormType = 'registration' | 'sponsorship' | 'newsletter' | 'attendee';
 
 interface PlaceProps {
   onOpenPanel?: (formType: FormType) => void;
+  onScrollToForm?: () => void;
 }
 
-const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
+const Place: React.FC<PlaceProps> = ({ onOpenPanel, onScrollToForm }) => {
   const placeRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   
@@ -64,35 +64,33 @@ const Place: React.FC<PlaceProps> = ({ onOpenPanel }) => {
       <div className={styles.overlay}>
         <div className={styles.contentBox} ref={contentRef}>
           <h2 className={styles.title}>
-          MILANO<br/>NOVEMBRE<br/>2025
+          MILANO<br/>04 DICEMBRE<br/>2025
           </h2>
           <div className={styles.venueInfo}>
+            <img 
+              src="/assets/img/logo_tag.png" 
+              alt="Talent Garden Calabiana" 
+              className={styles.logo}
+            />
             <p className={styles.description}>
-            Stiamo scegliendo il luogo perfetto dove visione e materia si incontrano.<br/>
-            Vuoi esserci tra i primi a saperlo?
+            Il luogo è stato scelto.<br/>Dove la luce incontra la creatività,<br/>lì nascerà la prima Italian Prompt Battle.
             </p>
           </div>
           <button 
-            className={ctaStyles.ctaEmail}
+            className={styles.ctaButton}
             onClick={() => {
               // Tracking Google Analytics
               if (typeof window !== 'undefined' && window.gtag) {
                 window.gtag('event', 'click_iscriviti', {
                   'event_category': 'interazione',
-                  'event_label': 'cta_place_sponsorship',
+                  'event_label': 'cta_place_form',
                   'value': 1
                 });
               }
-              onOpenPanel?.('sponsorship');
+              onScrollToForm?.();
             }}
           >
-            <span>↗ SEGNALA UNO SPAZIO PERFETTO</span>
-            <span className={ctaStyles.ctaArrow}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 12H16" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M13 9L16 12L13 15" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
+            Partecipa all&apos;evento
           </button>
         </div>
       </div>

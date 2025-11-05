@@ -1,0 +1,39 @@
+.attendeeSection {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
+  display: block;
+  padding: 60px 80px;
+  z-index: 100;
+  transform: translateZ(0);
+}
+
+.container {
+  width: 100%;
+  max-width: 94vw;
+  margin: 0 auto;
+  color: #1a1a1a;
+}
+
+.container form {
+  width: 100%;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .attendeeSection {
+    padding: 40px 20px;
+  }
+  
+  .container {
+    max-width: 100vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendeeSection {
+    padding: 30px 15px;
+  }
+}
+

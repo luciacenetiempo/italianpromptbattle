@@ -96,8 +96,8 @@
 
 .venueInfo {
   display: flex;
-  align-items: flex-end;
-  gap: 2.5rem;
+  align-items: center;
+  gap: 3rem;
 }
 
 .venueLabel {
@@ -115,7 +115,46 @@
   color: #e0e0e0;
   line-height: 1.7;
   font-weight: 300;
-  max-width: 350px;
+  max-width: 420px;
+}
+
+
+.ctaButton {
+  background: #b6ff6c;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 2em;
+  padding: 0.9em 2em;
+  font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 16px rgba(182, 255, 108, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  pointer-events: auto;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(182, 255, 108, 0.4);
+  background: #a8f05a;
+}
+
+.ctaButton:active {
+  transform: translateY(0) scale(1);
 }
 
 @media (max-width: 900px) {
