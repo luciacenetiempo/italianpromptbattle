@@ -1,6 +1,5 @@
 .chiSiamoSection {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100vw;
   min-height: 100vh;
   background: #000;
